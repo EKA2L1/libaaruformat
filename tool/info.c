@@ -25,14 +25,14 @@
 
 #include "aaruformattool.h"
 
-int info(char* path)
+int info(char *path)
 {
-    aaruformatContext* ctx;
-    char*              strBuffer;
+    aaruformatContext *ctx;
+    char              *strBuffer;
     UErrorCode         u_error_code;
     uint               i, j;
-    mediaTagEntry*     mediaTag;
-    mediaTagEntry*     tmpMediaTag;
+    mediaTagEntry     *mediaTag;
+    mediaTagEntry     *tmpMediaTag;
 
     ctx = aaruf_open(path);
 
@@ -43,14 +43,14 @@ int info(char* path)
     }
 
     printf("AaruFormat context information:\n");
-    printf("Magic number: %8.8s\n", (char*)&ctx->magic);
+    printf("Magic number: %8.8s\n", (char *)&ctx->magic);
     printf("Library version: %d.%d\n", ctx->libraryMajorVersion, ctx->libraryMinorVersion);
     printf("AaruFormat header:\n");
-    printf("\tIdentifier: %8.8s\n", (char*)&ctx->header.identifier);
+    printf("\tIdentifier: %8.8s\n", (char *)&ctx->header.identifier);
 
     strBuffer = malloc(65);
     memset(strBuffer, 0, 65);
-    ucnv_convert(NULL, "UTF-16LE", strBuffer, 64, (const char*)ctx->header.application, 64, &u_error_code);
+    ucnv_convert(NULL, "UTF-16LE", strBuffer, 64, (const char *)ctx->header.application, 64, &u_error_code);
     if(u_error_code == U_ZERO_ERROR) printf("\tApplication: %s\n", strBuffer);
     free(strBuffer);
 
@@ -88,30 +88,23 @@ int info(char* path)
     if(ctx->sectorPrefixDdt != NULL) printf("Sector suffix DDT has been read to memory.\n");
 
     if(ctx->geometryBlock.identifier == GeometryBlock)
-        printf("Media has %d cylinders, %d heads and %d sectors per track.\n",
-               ctx->geometryBlock.cylinders,
-               ctx->geometryBlock.heads,
-               ctx->geometryBlock.sectorsPerTrack);
+        printf("Media has %d cylinders, %d heads and %d sectors per track.\n", ctx->geometryBlock.cylinders,
+               ctx->geometryBlock.heads, ctx->geometryBlock.sectorsPerTrack);
 
     if(ctx->metadataBlockHeader.identifier == MetadataBlock)
     {
         printf("Metadata block:\n");
         if(ctx->metadataBlockHeader.mediaSequence > 0)
-            printf("\tMedia is no. %d in a set of %d media\n",
-                   ctx->metadataBlockHeader.mediaSequence,
+            printf("\tMedia is no. %d in a set of %d media\n", ctx->metadataBlockHeader.mediaSequence,
                    ctx->metadataBlockHeader.lastMediaSequence);
 
         if(ctx->metadataBlockHeader.creatorLength > 0)
         {
             strBuffer = malloc(ctx->metadataBlockHeader.creatorLength + 1);
             memset(strBuffer, 0, ctx->metadataBlockHeader.creatorLength + 1);
-            ucnv_convert(NULL,
-                         "UTF-16LE",
-                         strBuffer,
-                         (int)ctx->metadataBlockHeader.creatorLength,
-                         (char*)(ctx->metadataBlock + ctx->metadataBlockHeader.creatorOffset),
-                         (int)ctx->metadataBlockHeader.creatorLength,
-                         &u_error_code);
+            ucnv_convert(NULL, "UTF-16LE", strBuffer, (int)ctx->metadataBlockHeader.creatorLength,
+                         (char *)(ctx->metadataBlock + ctx->metadataBlockHeader.creatorOffset),
+                         (int)ctx->metadataBlockHeader.creatorLength, &u_error_code);
             printf("\tCreator: %s\n", strBuffer);
             free(strBuffer);
         }
@@ -120,13 +113,9 @@ int info(char* path)
         {
             strBuffer = malloc(ctx->metadataBlockHeader.commentsLength + 1);
             memset(strBuffer, 0, ctx->metadataBlockHeader.commentsLength + 1);
-            ucnv_convert(NULL,
-                         "UTF-16LE",
-                         strBuffer,
-                         (int)ctx->metadataBlockHeader.commentsLength,
-                         (char*)(ctx->metadataBlock + ctx->metadataBlockHeader.commentsOffset),
-                         (int)ctx->metadataBlockHeader.commentsLength,
-                         &u_error_code);
+            ucnv_convert(NULL, "UTF-16LE", strBuffer, (int)ctx->metadataBlockHeader.commentsLength,
+                         (char *)(ctx->metadataBlock + ctx->metadataBlockHeader.commentsOffset),
+                         (int)ctx->metadataBlockHeader.commentsLength, &u_error_code);
             printf("\tCreator: %s\n", strBuffer);
             free(strBuffer);
         }
@@ -135,13 +124,9 @@ int info(char* path)
         {
             strBuffer = malloc(ctx->metadataBlockHeader.mediaTitleLength + 1);
             memset(strBuffer, 0, ctx->metadataBlockHeader.mediaTitleLength + 1);
-            ucnv_convert(NULL,
-                         "UTF-16LE",
-                         strBuffer,
-                         (int)ctx->metadataBlockHeader.mediaTitleLength,
-                         (char*)(ctx->metadataBlock + ctx->metadataBlockHeader.mediaTitleOffset),
-                         (int)ctx->metadataBlockHeader.mediaTitleLength,
-                         &u_error_code);
+            ucnv_convert(NULL, "UTF-16LE", strBuffer, (int)ctx->metadataBlockHeader.mediaTitleLength,
+                         (char *)(ctx->metadataBlock + ctx->metadataBlockHeader.mediaTitleOffset),
+                         (int)ctx->metadataBlockHeader.mediaTitleLength, &u_error_code);
             printf("\tCreator: %s\n", strBuffer);
             free(strBuffer);
         }
@@ -150,13 +135,9 @@ int info(char* path)
         {
             strBuffer = malloc(ctx->metadataBlockHeader.mediaManufacturerLength + 1);
             memset(strBuffer, 0, ctx->metadataBlockHeader.mediaManufacturerLength + 1);
-            ucnv_convert(NULL,
-                         "UTF-16LE",
-                         strBuffer,
-                         (int)ctx->metadataBlockHeader.mediaManufacturerLength,
-                         (char*)(ctx->metadataBlock + ctx->metadataBlockHeader.mediaManufacturerOffset),
-                         (int)ctx->metadataBlockHeader.mediaManufacturerLength,
-                         &u_error_code);
+            ucnv_convert(NULL, "UTF-16LE", strBuffer, (int)ctx->metadataBlockHeader.mediaManufacturerLength,
+                         (char *)(ctx->metadataBlock + ctx->metadataBlockHeader.mediaManufacturerOffset),
+                         (int)ctx->metadataBlockHeader.mediaManufacturerLength, &u_error_code);
             printf("\tCreator: %s\n", strBuffer);
             free(strBuffer);
         }
@@ -165,13 +146,9 @@ int info(char* path)
         {
             strBuffer = malloc(ctx->metadataBlockHeader.mediaModelLength + 1);
             memset(strBuffer, 0, ctx->metadataBlockHeader.mediaModelLength + 1);
-            ucnv_convert(NULL,
-                         "UTF-16LE",
-                         strBuffer,
-                         (int)ctx->metadataBlockHeader.mediaModelLength,
-                         (char*)(ctx->metadataBlock + ctx->metadataBlockHeader.mediaModelOffset),
-                         (int)ctx->metadataBlockHeader.mediaModelLength,
-                         &u_error_code);
+            ucnv_convert(NULL, "UTF-16LE", strBuffer, (int)ctx->metadataBlockHeader.mediaModelLength,
+                         (char *)(ctx->metadataBlock + ctx->metadataBlockHeader.mediaModelOffset),
+                         (int)ctx->metadataBlockHeader.mediaModelLength, &u_error_code);
             printf("\tCreator: %s\n", strBuffer);
             free(strBuffer);
         }
@@ -180,13 +157,9 @@ int info(char* path)
         {
             strBuffer = malloc(ctx->metadataBlockHeader.mediaSerialNumberLength + 1);
             memset(strBuffer, 0, ctx->metadataBlockHeader.mediaSerialNumberLength + 1);
-            ucnv_convert(NULL,
-                         "UTF-16LE",
-                         strBuffer,
-                         (int)ctx->metadataBlockHeader.mediaSerialNumberLength,
-                         (char*)(ctx->metadataBlock + ctx->metadataBlockHeader.mediaSerialNumberOffset),
-                         (int)ctx->metadataBlockHeader.mediaSerialNumberLength,
-                         &u_error_code);
+            ucnv_convert(NULL, "UTF-16LE", strBuffer, (int)ctx->metadataBlockHeader.mediaSerialNumberLength,
+                         (char *)(ctx->metadataBlock + ctx->metadataBlockHeader.mediaSerialNumberOffset),
+                         (int)ctx->metadataBlockHeader.mediaSerialNumberLength, &u_error_code);
             printf("\tCreator: %s\n", strBuffer);
             free(strBuffer);
         }
@@ -195,13 +168,9 @@ int info(char* path)
         {
             strBuffer = malloc(ctx->metadataBlockHeader.mediaBarcodeLength + 1);
             memset(strBuffer, 0, ctx->metadataBlockHeader.mediaBarcodeLength + 1);
-            ucnv_convert(NULL,
-                         "UTF-16LE",
-                         strBuffer,
-                         (int)ctx->metadataBlockHeader.mediaBarcodeLength,
-                         (char*)(ctx->metadataBlock + ctx->metadataBlockHeader.mediaBarcodeOffset),
-                         (int)ctx->metadataBlockHeader.mediaBarcodeLength,
-                         &u_error_code);
+            ucnv_convert(NULL, "UTF-16LE", strBuffer, (int)ctx->metadataBlockHeader.mediaBarcodeLength,
+                         (char *)(ctx->metadataBlock + ctx->metadataBlockHeader.mediaBarcodeOffset),
+                         (int)ctx->metadataBlockHeader.mediaBarcodeLength, &u_error_code);
             printf("\tCreator: %s\n", strBuffer);
             free(strBuffer);
         }
@@ -210,13 +179,9 @@ int info(char* path)
         {
             strBuffer = malloc(ctx->metadataBlockHeader.mediaPartNumberLength + 1);
             memset(strBuffer, 0, ctx->metadataBlockHeader.mediaPartNumberLength + 1);
-            ucnv_convert(NULL,
-                         "UTF-16LE",
-                         strBuffer,
-                         (int)ctx->metadataBlockHeader.mediaPartNumberLength,
-                         (char*)(ctx->metadataBlock + ctx->metadataBlockHeader.mediaPartNumberOffset),
-                         (int)ctx->metadataBlockHeader.mediaPartNumberLength,
-                         &u_error_code);
+            ucnv_convert(NULL, "UTF-16LE", strBuffer, (int)ctx->metadataBlockHeader.mediaPartNumberLength,
+                         (char *)(ctx->metadataBlock + ctx->metadataBlockHeader.mediaPartNumberOffset),
+                         (int)ctx->metadataBlockHeader.mediaPartNumberLength, &u_error_code);
             printf("\tCreator: %s\n", strBuffer);
             free(strBuffer);
         }
@@ -225,13 +190,9 @@ int info(char* path)
         {
             strBuffer = malloc(ctx->metadataBlockHeader.driveManufacturerLength + 1);
             memset(strBuffer, 0, ctx->metadataBlockHeader.driveManufacturerLength + 1);
-            ucnv_convert(NULL,
-                         "UTF-16LE",
-                         strBuffer,
-                         (int)ctx->metadataBlockHeader.driveManufacturerLength,
-                         (char*)(ctx->metadataBlock + ctx->metadataBlockHeader.driveManufacturerOffset),
-                         (int)ctx->metadataBlockHeader.driveManufacturerLength,
-                         &u_error_code);
+            ucnv_convert(NULL, "UTF-16LE", strBuffer, (int)ctx->metadataBlockHeader.driveManufacturerLength,
+                         (char *)(ctx->metadataBlock + ctx->metadataBlockHeader.driveManufacturerOffset),
+                         (int)ctx->metadataBlockHeader.driveManufacturerLength, &u_error_code);
             printf("\tCreator: %s\n", strBuffer);
             free(strBuffer);
         }
@@ -240,13 +201,9 @@ int info(char* path)
         {
             strBuffer = malloc(ctx->metadataBlockHeader.driveModelLength + 1);
             memset(strBuffer, 0, ctx->metadataBlockHeader.driveModelLength + 1);
-            ucnv_convert(NULL,
-                         "UTF-16LE",
-                         strBuffer,
-                         (int)ctx->metadataBlockHeader.driveModelLength,
-                         (char*)(ctx->metadataBlock + ctx->metadataBlockHeader.driveModelOffset),
-                         (int)ctx->metadataBlockHeader.driveModelLength,
-                         &u_error_code);
+            ucnv_convert(NULL, "UTF-16LE", strBuffer, (int)ctx->metadataBlockHeader.driveModelLength,
+                         (char *)(ctx->metadataBlock + ctx->metadataBlockHeader.driveModelOffset),
+                         (int)ctx->metadataBlockHeader.driveModelLength, &u_error_code);
             printf("\tCreator: %s\n", strBuffer);
             free(strBuffer);
         }
@@ -255,13 +212,9 @@ int info(char* path)
         {
             strBuffer = malloc(ctx->metadataBlockHeader.driveSerialNumberLength + 1);
             memset(strBuffer, 0, ctx->metadataBlockHeader.driveSerialNumberLength + 1);
-            ucnv_convert(NULL,
-                         "UTF-16LE",
-                         strBuffer,
-                         (int)ctx->metadataBlockHeader.driveSerialNumberLength,
-                         (char*)(ctx->metadataBlock + ctx->metadataBlockHeader.driveSerialNumberOffset),
-                         (int)ctx->metadataBlockHeader.driveSerialNumberLength,
-                         &u_error_code);
+            ucnv_convert(NULL, "UTF-16LE", strBuffer, (int)ctx->metadataBlockHeader.driveSerialNumberLength,
+                         (char *)(ctx->metadataBlock + ctx->metadataBlockHeader.driveSerialNumberOffset),
+                         (int)ctx->metadataBlockHeader.driveSerialNumberLength, &u_error_code);
             printf("\tCreator: %s\n", strBuffer);
             free(strBuffer);
         }
@@ -270,13 +223,9 @@ int info(char* path)
         {
             strBuffer = malloc(ctx->metadataBlockHeader.driveFirmwareRevisionLength + 1);
             memset(strBuffer, 0, ctx->metadataBlockHeader.driveFirmwareRevisionLength + 1);
-            ucnv_convert(NULL,
-                         "UTF-16LE",
-                         strBuffer,
-                         (int)ctx->metadataBlockHeader.driveFirmwareRevisionLength,
-                         (char*)(ctx->metadataBlock + ctx->metadataBlockHeader.driveFirmwareRevisionOffset),
-                         (int)ctx->metadataBlockHeader.driveFirmwareRevisionLength,
-                         &u_error_code);
+            ucnv_convert(NULL, "UTF-16LE", strBuffer, (int)ctx->metadataBlockHeader.driveFirmwareRevisionLength,
+                         (char *)(ctx->metadataBlock + ctx->metadataBlockHeader.driveFirmwareRevisionOffset),
+                         (int)ctx->metadataBlockHeader.driveFirmwareRevisionLength, &u_error_code);
             printf("\tCreator: %s\n", strBuffer);
             free(strBuffer);
         }
@@ -319,13 +268,10 @@ int info(char* path)
             {
                 strBuffer = malloc(ctx->dumpHardwareEntriesWithData[i].entry.manufacturerLength + 1);
                 memset(strBuffer, 0, ctx->dumpHardwareEntriesWithData[i].entry.manufacturerLength + 1);
-                ucnv_convert(NULL,
-                             "UTF-8",
-                             strBuffer,
+                ucnv_convert(NULL, "UTF-8", strBuffer,
                              (int)ctx->dumpHardwareEntriesWithData[i].entry.manufacturerLength,
-                             (char*)(ctx->dumpHardwareEntriesWithData[i].manufacturer),
-                             (int)ctx->dumpHardwareEntriesWithData[i].entry.manufacturerLength,
-                             &u_error_code);
+                             (char *)(ctx->dumpHardwareEntriesWithData[i].manufacturer),
+                             (int)ctx->dumpHardwareEntriesWithData[i].entry.manufacturerLength, &u_error_code);
                 printf("\t\tManufacturer: %s\n", strBuffer);
                 free(strBuffer);
             }
@@ -334,13 +280,9 @@ int info(char* path)
             {
                 strBuffer = malloc(ctx->dumpHardwareEntriesWithData[i].entry.modelLength + 1);
                 memset(strBuffer, 0, ctx->dumpHardwareEntriesWithData[i].entry.modelLength + 1);
-                ucnv_convert(NULL,
-                             "UTF-8",
-                             strBuffer,
-                             (int)ctx->dumpHardwareEntriesWithData[i].entry.modelLength,
-                             (char*)(ctx->dumpHardwareEntriesWithData[i].model),
-                             (int)ctx->dumpHardwareEntriesWithData[i].entry.modelLength,
-                             &u_error_code);
+                ucnv_convert(NULL, "UTF-8", strBuffer, (int)ctx->dumpHardwareEntriesWithData[i].entry.modelLength,
+                             (char *)(ctx->dumpHardwareEntriesWithData[i].model),
+                             (int)ctx->dumpHardwareEntriesWithData[i].entry.modelLength, &u_error_code);
                 printf("\t\tModel: %s\n", strBuffer);
                 free(strBuffer);
             }
@@ -349,13 +291,9 @@ int info(char* path)
             {
                 strBuffer = malloc(ctx->dumpHardwareEntriesWithData[i].entry.revisionLength + 1);
                 memset(strBuffer, 0, ctx->dumpHardwareEntriesWithData[i].entry.revisionLength + 1);
-                ucnv_convert(NULL,
-                             "UTF-8",
-                             strBuffer,
-                             (int)ctx->dumpHardwareEntriesWithData[i].entry.revisionLength,
-                             (char*)(ctx->dumpHardwareEntriesWithData[i].revision),
-                             (int)ctx->dumpHardwareEntriesWithData[i].entry.revisionLength,
-                             &u_error_code);
+                ucnv_convert(NULL, "UTF-8", strBuffer, (int)ctx->dumpHardwareEntriesWithData[i].entry.revisionLength,
+                             (char *)(ctx->dumpHardwareEntriesWithData[i].revision),
+                             (int)ctx->dumpHardwareEntriesWithData[i].entry.revisionLength, &u_error_code);
                 printf("\t\tRevision: %s\n", strBuffer);
                 free(strBuffer);
             }
@@ -364,13 +302,9 @@ int info(char* path)
             {
                 strBuffer = malloc(ctx->dumpHardwareEntriesWithData[i].entry.firmwareLength + 1);
                 memset(strBuffer, 0, ctx->dumpHardwareEntriesWithData[i].entry.firmwareLength + 1);
-                ucnv_convert(NULL,
-                             "UTF-8",
-                             strBuffer,
-                             (int)ctx->dumpHardwareEntriesWithData[i].entry.firmwareLength,
-                             (char*)(ctx->dumpHardwareEntriesWithData[i].firmware),
-                             (int)ctx->dumpHardwareEntriesWithData[i].entry.firmwareLength,
-                             &u_error_code);
+                ucnv_convert(NULL, "UTF-8", strBuffer, (int)ctx->dumpHardwareEntriesWithData[i].entry.firmwareLength,
+                             (char *)(ctx->dumpHardwareEntriesWithData[i].firmware),
+                             (int)ctx->dumpHardwareEntriesWithData[i].entry.firmwareLength, &u_error_code);
                 printf("\t\tFirmware version: %s\n", strBuffer);
                 free(strBuffer);
             }
@@ -379,13 +313,9 @@ int info(char* path)
             {
                 strBuffer = malloc(ctx->dumpHardwareEntriesWithData[i].entry.serialLength + 1);
                 memset(strBuffer, 0, ctx->dumpHardwareEntriesWithData[i].entry.serialLength + 1);
-                ucnv_convert(NULL,
-                             "UTF-8",
-                             strBuffer,
-                             (int)ctx->dumpHardwareEntriesWithData[i].entry.serialLength,
-                             (char*)(ctx->dumpHardwareEntriesWithData[i].serial),
-                             (int)ctx->dumpHardwareEntriesWithData[i].entry.serialLength,
-                             &u_error_code);
+                ucnv_convert(NULL, "UTF-8", strBuffer, (int)ctx->dumpHardwareEntriesWithData[i].entry.serialLength,
+                             (char *)(ctx->dumpHardwareEntriesWithData[i].serial),
+                             (int)ctx->dumpHardwareEntriesWithData[i].entry.serialLength, &u_error_code);
                 printf("\t\tSerial number: %s\n", strBuffer);
                 free(strBuffer);
             }
@@ -394,13 +324,10 @@ int info(char* path)
             {
                 strBuffer = malloc(ctx->dumpHardwareEntriesWithData[i].entry.softwareNameLength + 1);
                 memset(strBuffer, 0, ctx->dumpHardwareEntriesWithData[i].entry.softwareNameLength + 1);
-                ucnv_convert(NULL,
-                             "UTF-8",
-                             strBuffer,
+                ucnv_convert(NULL, "UTF-8", strBuffer,
                              (int)ctx->dumpHardwareEntriesWithData[i].entry.softwareNameLength,
-                             (char*)(ctx->dumpHardwareEntriesWithData[i].softwareName),
-                             (int)ctx->dumpHardwareEntriesWithData[i].entry.softwareNameLength,
-                             &u_error_code);
+                             (char *)(ctx->dumpHardwareEntriesWithData[i].softwareName),
+                             (int)ctx->dumpHardwareEntriesWithData[i].entry.softwareNameLength, &u_error_code);
                 printf("\t\tSoftware name: %s\n", strBuffer);
                 free(strBuffer);
             }
@@ -409,13 +336,10 @@ int info(char* path)
             {
                 strBuffer = malloc(ctx->dumpHardwareEntriesWithData[i].entry.softwareVersionLength + 1);
                 memset(strBuffer, 0, ctx->dumpHardwareEntriesWithData[i].entry.softwareVersionLength + 1);
-                ucnv_convert(NULL,
-                             "UTF-8",
-                             strBuffer,
+                ucnv_convert(NULL, "UTF-8", strBuffer,
                              (int)ctx->dumpHardwareEntriesWithData[i].entry.softwareVersionLength,
-                             (char*)(ctx->dumpHardwareEntriesWithData[i].softwareVersion),
-                             (int)ctx->dumpHardwareEntriesWithData[i].entry.softwareVersionLength,
-                             &u_error_code);
+                             (char *)(ctx->dumpHardwareEntriesWithData[i].softwareVersion),
+                             (int)ctx->dumpHardwareEntriesWithData[i].entry.softwareVersionLength, &u_error_code);
                 printf("\t\tSoftware version: %s\n", strBuffer);
                 free(strBuffer);
             }
@@ -424,11 +348,9 @@ int info(char* path)
             {
                 strBuffer = malloc(ctx->dumpHardwareEntriesWithData[i].entry.softwareOperatingSystemLength + 1);
                 memset(strBuffer, 0, ctx->dumpHardwareEntriesWithData[i].entry.softwareOperatingSystemLength + 1);
-                ucnv_convert(NULL,
-                             "UTF-8",
-                             strBuffer,
+                ucnv_convert(NULL, "UTF-8", strBuffer,
                              (int)ctx->dumpHardwareEntriesWithData[i].entry.softwareOperatingSystemLength,
-                             (char*)(ctx->dumpHardwareEntriesWithData[i].softwareOperatingSystem),
+                             (char *)(ctx->dumpHardwareEntriesWithData[i].softwareOperatingSystem),
                              (int)ctx->dumpHardwareEntriesWithData[i].entry.softwareOperatingSystemLength,
                              &u_error_code);
                 printf("\t\tSoftware operating system: %s\n", strBuffer);
@@ -474,7 +396,7 @@ int info(char* path)
     {
         strBuffer = malloc(65);
         memset(strBuffer, 0, 65);
-        ucnv_convert(NULL, "UTF-16LE", strBuffer, 64, (const char*)ctx->imageInfo.Application, 64, &u_error_code);
+        ucnv_convert(NULL, "UTF-16LE", strBuffer, 64, (const char *)ctx->imageInfo.Application, 64, &u_error_code);
         if(u_error_code == U_ZERO_ERROR) printf("\tApplication: %s\n", strBuffer);
         free(strBuffer);
     }
@@ -494,8 +416,7 @@ int info(char* path)
     printf("\tMedia type: %u\n", ctx->imageInfo.MediaType);
 
     if(ctx->imageInfo.MediaSequence > 0 || ctx->imageInfo.LastMediaSequence > 0)
-        printf("\tMedia is number %d in a set of %d media\n",
-               ctx->imageInfo.MediaSequence,
+        printf("\tMedia is number %d in a set of %d media\n", ctx->imageInfo.MediaSequence,
                ctx->imageInfo.LastMediaSequence);
 
     if(ctx->imageInfo.DriveManufacturer != NULL) printf("\tDrive manufacturer: %s\n", ctx->imageInfo.DriveManufacturer);
@@ -506,10 +427,8 @@ int info(char* path)
         printf("\tDrive firmware revision: %s\n", ctx->imageInfo.DriveFirmwareRevision);
     printf("\tXML media type: %d\n", ctx->imageInfo.XmlMediaType);
     if(ctx->imageInfo.Cylinders > 0 || ctx->imageInfo.Heads > 0 || ctx->imageInfo.SectorsPerTrack > 0)
-        printf("\tMedia has %d cylinders, %d heads and %d sectors per track\n",
-               ctx->imageInfo.Cylinders,
-               ctx->imageInfo.Heads,
-               ctx->imageInfo.SectorsPerTrack);
+        printf("\tMedia has %d cylinders, %d heads and %d sectors per track\n", ctx->imageInfo.Cylinders,
+               ctx->imageInfo.Heads, ctx->imageInfo.SectorsPerTrack);
 
     if(ctx->checksums.hasMd5)
     {

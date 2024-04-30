@@ -10,15 +10,15 @@
 
 struct CacheEntry
 {
-    char*          key;
-    void*          value;
+    char          *key;
+    void          *value;
     UT_hash_handle hh;
 };
 
 struct CacheHeader
 {
     uint64_t           max_items;
-    struct CacheEntry* cache;
+    struct CacheEntry *cache;
 };
 
 /**
@@ -27,7 +27,7 @@ struct CacheHeader
  * @param key Key
  * @return Value if found, NULL if not
  */
-void* find_in_cache(struct CacheHeader* cache, char* key);
+void *find_in_cache(struct CacheHeader *cache, char *key);
 
 /**
  * Adds an item to the specified cache
@@ -35,7 +35,7 @@ void* find_in_cache(struct CacheHeader* cache, char* key);
  * @param key Key
  * @param value Value
  */
-void add_to_cache(struct CacheHeader* cache, char* key, void* value);
+void add_to_cache(struct CacheHeader *cache, char *key, void *value);
 
 /**
  * Finds an item in the specified cache using a 64-bit integer key
@@ -43,7 +43,7 @@ void add_to_cache(struct CacheHeader* cache, char* key, void* value);
  * @param key Key
  * @return Value if found, NULL if not
  */
-void* find_in_cache_uint64(struct CacheHeader* cache, uint64_t key);
+void *find_in_cache_uint64(struct CacheHeader *cache, uint64_t key);
 
 /**
  * Adds an item to the specified cache using a 64-bit integer key
@@ -51,6 +51,6 @@ void* find_in_cache_uint64(struct CacheHeader* cache, uint64_t key);
  * @param key Key
  * @param value Value
  */
-void add_to_cache_uint64(struct CacheHeader* cache, uint64_t key, void* value);
+void add_to_cache_uint64(struct CacheHeader *cache, uint64_t key, void *value);
 
-#endif // LIBAARUFORMAT_LRU_H
+#endif  // LIBAARUFORMAT_LRU_H

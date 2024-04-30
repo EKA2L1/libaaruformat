@@ -16,7 +16,7 @@
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#if defined(__x86_64__) || defined(__amd64) || defined(_M_AMD64) || defined(_M_X64) || defined(__I386__) ||            \
+#if defined(__x86_64__) || defined(__amd64) || defined(_M_AMD64) || defined(_M_X64) || defined(__I386__) || \
     defined(__i386__) || defined(__THW_INTEL) || defined(_M_IX86)
 
 #include <inttypes.h>
@@ -66,9 +66,9 @@ static const uint8_t shuffleMasks[] = {
     0x8f, 0x8e, 0x8d, 0x8c, 0x8b, 0x8a, 0x89, 0x88, 0x87, 0x86, 0x85, 0x84, 0x83, 0x82, 0x81, 0x80,
 };
 
-CLMUL static void shiftRight128(__m128i in, size_t n, __m128i* outLeft, __m128i* outRight)
+CLMUL static void shiftRight128(__m128i in, size_t n, __m128i *outLeft, __m128i *outRight)
 {
-    const __m128i maskA = _mm_loadu_si128((const __m128i*)(shuffleMasks + (16 - n)));
+    const __m128i maskA = _mm_loadu_si128((const __m128i *)(shuffleMasks + (16 - n)));
     const __m128i maskB = _mm_xor_si128(maskA, _mm_cmpeq_epi8(_mm_setzero_si128(), _mm_setzero_si128()));
 
     *outLeft  = _mm_shuffle_epi8(in, maskB);
@@ -80,28 +80,28 @@ CLMUL static __m128i fold(__m128i in, __m128i foldConstants)
     return _mm_xor_si128(_mm_clmulepi64_si128(in, foldConstants, 0x00), _mm_clmulepi64_si128(in, foldConstants, 0x11));
 }
 
-AARU_EXPORT CLMUL uint64_t AARU_CALL aaruf_crc64_clmul(uint64_t crc, const uint8_t* data, long length)
+AARU_EXPORT CLMUL uint64_t AARU_CALL aaruf_crc64_clmul(uint64_t crc, const uint8_t *data, long length)
 {
-    const uint64_t k1 = 0xe05dd497ca393ae4; // bitReflect(expMod65(128 + 64, poly, 1)) << 1;
-    const uint64_t k2 = 0xdabe95afc7875f40; // bitReflect(expMod65(128, poly, 1)) << 1;
-    const uint64_t mu = 0x9c3e466c172963d5; // (bitReflect(div129by65(poly)) << 1) | 1;
-    const uint64_t p  = 0x92d8af2baf0e1e85; // (bitReflect(poly) << 1) | 1;
+    const uint64_t k1 = 0xe05dd497ca393ae4;  // bitReflect(expMod65(128 + 64, poly, 1)) << 1;
+    const uint64_t k2 = 0xdabe95afc7875f40;  // bitReflect(expMod65(128, poly, 1)) << 1;
+    const uint64_t mu = 0x9c3e466c172963d5;  // (bitReflect(div129by65(poly)) << 1) | 1;
+    const uint64_t p  = 0x92d8af2baf0e1e85;  // (bitReflect(poly) << 1) | 1;
 
     const __m128i foldConstants1 = _mm_set_epi64x(k2, k1);
     const __m128i foldConstants2 = _mm_set_epi64x(p, mu);
 
-    const uint8_t* end = data + length;
+    const uint8_t *end = data + length;
 
     // Align pointers
-    const __m128i* alignedData = (const __m128i*)((uintptr_t)data & ~(uintptr_t)15);
-    const __m128i* alignedEnd  = (const __m128i*)(((uintptr_t)end + 15) & ~(uintptr_t)15);
+    const __m128i *alignedData = (const __m128i *)((uintptr_t)data & ~(uintptr_t)15);
+    const __m128i *alignedEnd  = (const __m128i *)(((uintptr_t)end + 15) & ~(uintptr_t)15);
 
-    const size_t leadInSize  = data - (const uint8_t*)alignedData;
-    const size_t leadOutSize = (const uint8_t*)alignedEnd - end;
+    const size_t leadInSize  = data - (const uint8_t *)alignedData;
+    const size_t leadOutSize = (const uint8_t *)alignedEnd - end;
 
     const size_t alignedLength = alignedEnd - alignedData;
 
-    const __m128i leadInMask = _mm_loadu_si128((const __m128i*)(shuffleMasks + (16 - leadInSize)));
+    const __m128i leadInMask = _mm_loadu_si128((const __m128i *)(shuffleMasks + (16 - leadInSize)));
     const __m128i data0      = _mm_blendv_epi8(_mm_setzero_si128(), _mm_load_si128(alignedData), leadInMask);
 
 #if defined(_WIN64)
@@ -122,7 +122,7 @@ AARU_EXPORT CLMUL uint64_t AARU_CALL aaruf_crc64_clmul(uint64_t crc, const uint8
 
         const __m128i P = _mm_xor_si128(A, crc0);
         R               = _mm_xor_si128(_mm_clmulepi64_si128(P, foldConstants1, 0x10),
-                          _mm_xor_si128(_mm_srli_si128(P, 8), _mm_slli_si128(crc1, 8)));
+                                        _mm_xor_si128(_mm_srli_si128(P, 8), _mm_slli_si128(crc1, 8)));
     }
     else if(alignedLength == 2)
     {
@@ -140,7 +140,7 @@ AARU_EXPORT CLMUL uint64_t AARU_CALL aaruf_crc64_clmul(uint64_t crc, const uint8
 
             const __m128i P = _mm_xor_si128(_mm_xor_si128(B, C), crc0);
             R               = _mm_xor_si128(_mm_clmulepi64_si128(P, foldConstants1, 0x10),
-                              _mm_xor_si128(_mm_srli_si128(P, 8), _mm_slli_si128(crc1, 8)));
+                                            _mm_xor_si128(_mm_srli_si128(P, 8), _mm_slli_si128(crc1, 8)));
         }
         else
         {

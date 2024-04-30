@@ -21,7 +21,7 @@
 
 #include <aaruformat.h>
 
-#if defined(__x86_64__) || defined(__amd64) || defined(_M_AMD64) || defined(_M_X64) || defined(__I386__) ||            \
+#if defined(__x86_64__) || defined(__amd64) || defined(_M_AMD64) || defined(_M_X64) || defined(__I386__) || \
     defined(__i386__) || defined(__THW_INTEL) || defined(_M_IX86)
 
 #ifdef _MSC_VER
@@ -35,7 +35,7 @@
 
 #endif
 
-static void cpuid(int info, unsigned* eax, unsigned* ebx, unsigned* ecx, unsigned* edx)
+static void cpuid(int info, unsigned *eax, unsigned *ebx, unsigned *ecx, unsigned *edx)
 {
 #ifdef _MSC_VER
     unsigned int registers[4];
@@ -58,7 +58,7 @@ static void cpuid(int info, unsigned* eax, unsigned* ebx, unsigned* ecx, unsigne
 #endif
 }
 
-static void cpuidex(int info, int count, unsigned* eax, unsigned* ebx, unsigned* ecx, unsigned* edx)
+static void cpuidex(int info, int count, unsigned *eax, unsigned *ebx, unsigned *ecx, unsigned *edx)
 {
 #ifdef _MSC_VER
     unsigned int registers[4];
@@ -152,7 +152,7 @@ int have_crypto_apple() { return 0; }
 #if defined(__aarch64__) || defined(_M_ARM64)
 int have_neon()
 {
-    return 1; // ARMv8-A made it mandatory
+    return 1;  // ARMv8-A made it mandatory
 }
 
 int have_arm_crc32()

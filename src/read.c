@@ -21,10 +21,10 @@
 
 #include <aaruformat.h>
 
-int32_t aaruf_read_media_tag(void* context, uint8_t* data, int32_t tag, uint32_t* length)
+int32_t aaruf_read_media_tag(void *context, uint8_t *data, int32_t tag, uint32_t *length)
 {
-    aaruformatContext* ctx;
-    mediaTagEntry*     item;
+    aaruformatContext *ctx;
+    mediaTagEntry     *item;
 
     if(context == NULL) return AARUF_ERROR_NOT_AARUFORMAT;
 
@@ -53,19 +53,19 @@ int32_t aaruf_read_media_tag(void* context, uint8_t* data, int32_t tag, uint32_t
     return AARUF_STATUS_OK;
 }
 
-int32_t aaruf_read_sector(void* context, uint64_t sectorAddress, uint8_t* data, uint32_t* length)
+int32_t aaruf_read_sector(void *context, uint64_t sectorAddress, uint8_t *data, uint32_t *length)
 {
-    aaruformatContext* ctx;
+    aaruformatContext *ctx;
     uint64_t           ddtEntry;
     uint32_t           offsetMask;
     uint64_t           offset;
     uint64_t           blockOffset;
-    BlockHeader*       blockHeader;
-    uint8_t*           block;
+    BlockHeader       *blockHeader;
+    uint8_t           *block;
     size_t             readBytes;
     uint8_t            lzmaProperties[LZMA_PROPERTIES_LENGTH];
     size_t             lzmaSize;
-    uint8_t*           cmpData;
+    uint8_t           *cmpData;
     int                errorNo;
 
     if(context == NULL) return AARUF_ERROR_NOT_AARUFORMAT;
@@ -107,7 +107,7 @@ int32_t aaruf_read_sector(void* context, uint64_t sectorAddress, uint8_t* data, 
         add_to_cache_uint64(&ctx->blockHeaderCache, blockOffset, blockHeader);
     }
     else
-        fseek(ctx->imageStream, blockOffset + sizeof(BlockHeader), SEEK_SET); // Advance as if reading the header
+        fseek(ctx->imageStream, blockOffset + sizeof(BlockHeader), SEEK_SET);  // Advance as if reading the header
 
     if(data == NULL || *length < blockHeader->sectorSize)
     {
@@ -129,7 +129,7 @@ int32_t aaruf_read_sector(void* context, uint64_t sectorAddress, uint8_t* data, 
     switch(blockHeader->compression)
     {
         case None:
-            block = (uint8_t*)malloc(blockHeader->length);
+            block = (uint8_t *)malloc(blockHeader->length);
             if(block == NULL) return AARUF_ERROR_NOT_ENOUGH_MEMORY;
 
             readBytes = fread(block, 1, blockHeader->length, ctx->imageStream);
@@ -240,7 +240,8 @@ int32_t aaruf_read_sector(void* context, uint64_t sectorAddress, uint8_t* data, 
             free(cmpData);
 
             break;
-        default: return AARUF_ERROR_UNSUPPORTED_COMPRESSION;
+        default:
+            return AARUF_ERROR_UNSUPPORTED_COMPRESSION;
     }
 
     // Add block to cache
@@ -251,9 +252,9 @@ int32_t aaruf_read_sector(void* context, uint64_t sectorAddress, uint8_t* data, 
     return AARUF_STATUS_OK;
 }
 
-int32_t aaruf_read_track_sector(void* context, uint8_t* data, uint64_t sectorAddress, uint32_t* length, uint8_t track)
+int32_t aaruf_read_track_sector(void *context, uint8_t *data, uint64_t sectorAddress, uint32_t *length, uint8_t track)
 {
-    aaruformatContext* ctx;
+    aaruformatContext *ctx;
     int                i;
 
     if(context == NULL) return AARUF_ERROR_NOT_AARUFORMAT;
@@ -276,12 +277,12 @@ int32_t aaruf_read_track_sector(void* context, uint8_t* data, uint64_t sectorAdd
     return AARUF_ERROR_TRACK_NOT_FOUND;
 }
 
-int32_t aaruf_read_sector_long(void* context, uint64_t sectorAddress, uint8_t* data, uint32_t* length)
+int32_t aaruf_read_sector_long(void *context, uint64_t sectorAddress, uint8_t *data, uint32_t *length)
 {
-    aaruformatContext* ctx;
+    aaruformatContext *ctx;
     uint32_t           bareLength;
     uint32_t           tagLength;
-    uint8_t*           bareData;
+    uint8_t           *bareData;
     int32_t            res;
     TrackEntry         trk;
     int                i;
@@ -309,7 +310,7 @@ int32_t aaruf_read_sector_long(void* context, uint64_t sectorAddress, uint8_t* d
             bareLength = 0;
             aaruf_read_sector(context, sectorAddress, NULL, &bareLength);
 
-            bareData = (uint8_t*)malloc(bareLength);
+            bareData = (uint8_t *)malloc(bareLength);
 
             if(bareData == NULL) return AARUF_ERROR_NOT_ENOUGH_MEMORY;
 
@@ -338,11 +339,14 @@ int32_t aaruf_read_sector_long(void* context, uint64_t sectorAddress, uint8_t* d
             switch(trk.type)
             {
                 case Audio:
-                case Data: memcpy(data, bareData, bareLength); return res;
+                case Data:
+                    memcpy(data, bareData, bareLength);
+                    return res;
                 case CdMode1:
                     memcpy(data + 16, bareData, 2048);
 
-                    if(ctx->sectorPrefix != NULL) memcpy(data, ctx->sectorPrefix + (sectorAddress * 16), 16);
+                    if(ctx->sectorPrefix != NULL)
+                        memcpy(data, ctx->sectorPrefix + (sectorAddress * 16), 16);
                     else if(ctx->sectorPrefixDdt != NULL)
                     {
                         if((ctx->sectorPrefixDdt[sectorAddress] & CD_XFIX_MASK) == Correct)
@@ -367,7 +371,8 @@ int32_t aaruf_read_sector_long(void* context, uint64_t sectorAddress, uint8_t* d
 
                     if(res != AARUF_STATUS_OK) return res;
 
-                    if(ctx->sectorSuffix != NULL) memcpy(data + 2064, ctx->sectorSuffix + sectorAddress * 288, 288);
+                    if(ctx->sectorSuffix != NULL)
+                        memcpy(data + 2064, ctx->sectorSuffix + sectorAddress * 288, 288);
                     else if(ctx->sectorSuffixDdt != NULL)
                     {
                         if((ctx->sectorSuffixDdt[sectorAddress] & CD_XFIX_MASK) == Correct)
@@ -394,7 +399,8 @@ int32_t aaruf_read_sector_long(void* context, uint64_t sectorAddress, uint8_t* d
                 case CdMode2Formless:
                 case CdMode2Form1:
                 case CdMode2Form2:
-                    if(ctx->sectorPrefix != NULL) memcpy(data, ctx->sectorPrefix + sectorAddress * 16, 16);
+                    if(ctx->sectorPrefix != NULL)
+                        memcpy(data, ctx->sectorPrefix + sectorAddress * 16, 16);
                     else if(ctx->sectorPrefixDdt != NULL)
                     {
                         if((ctx->sectorPrefixDdt[sectorAddress] & CD_XFIX_MASK) == Correct)
@@ -452,7 +458,8 @@ int32_t aaruf_read_sector_long(void* context, uint64_t sectorAddress, uint8_t* d
                         memcpy(data + 16, bareData, 2336);
 
                     return res;
-                default: return AARUF_ERROR_INVALID_TRACK_FORMAT;
+                default:
+                    return AARUF_ERROR_INVALID_TRACK_FORMAT;
             }
         case BlockMedia:
             switch(ctx->imageInfo.MediaType)
@@ -469,11 +476,18 @@ int32_t aaruf_read_sector_long(void* context, uint64_t sectorAddress, uint8_t* d
                     {
                         case AppleFileWare:
                         case AppleProfile:
-                        case AppleWidget: tagLength = 20; break;
+                        case AppleWidget:
+                            tagLength = 20;
+                            break;
                         case AppleSonySS:
-                        case AppleSonyDS: tagLength = 12; break;
-                        case PriamDataTower: tagLength = 24; break;
-                        default: return AARUF_ERROR_INCORRECT_MEDIA_TYPE;
+                        case AppleSonyDS:
+                            tagLength = 12;
+                            break;
+                        case PriamDataTower:
+                            tagLength = 24;
+                            break;
+                        default:
+                            return AARUF_ERROR_INCORRECT_MEDIA_TYPE;
                     }
 
                     bareLength = 512;
@@ -498,8 +512,10 @@ int32_t aaruf_read_sector_long(void* context, uint64_t sectorAddress, uint8_t* d
                     free(bareData);
 
                     return res;
-                default: return AARUF_ERROR_INCORRECT_MEDIA_TYPE;
+                default:
+                    return AARUF_ERROR_INCORRECT_MEDIA_TYPE;
             }
-        default: return AARUF_ERROR_INCORRECT_MEDIA_TYPE;
+        default:
+            return AARUF_ERROR_INCORRECT_MEDIA_TYPE;
     }
 }

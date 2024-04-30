@@ -23,12 +23,12 @@
 
 #include "decls.h"
 
-#define SPAMSUM_LENGTH 64
-#define NUM_BLOCKHASHES 31
-#define ROLLING_WINDOW 7
-#define HASH_INIT 0x28021967
-#define HASH_PRIME 0x01000193
-#define MIN_BLOCKSIZE 3
+#define SPAMSUM_LENGTH   64
+#define NUM_BLOCKHASHES  31
+#define ROLLING_WINDOW   7
+#define HASH_INIT        0x28021967
+#define HASH_PRIME       0x01000193
+#define MIN_BLOCKSIZE    3
 #define FUZZY_MAX_RESULT ((2 * SPAMSUM_LENGTH) + 20)
 
 typedef struct
@@ -58,4 +58,4 @@ typedef struct
     roll_state    roll;
 } spamsum_ctx;
 
-#endif // LIBAARUFORMAT_SPAMSUM_H_
+#endif  // LIBAARUFORMAT_SPAMSUM_H_

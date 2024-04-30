@@ -71,19 +71,19 @@ TARGET_WITH_SIMD uint64x2_t sse2neon_vmull_p64(uint64x1_t _a, uint64x1_t _b)
     uint8x16_t k16_00 = vcombine_u8(vcreate_u8(0x000000000000ffff), vcreate_u8(0x0000000000000000));
 
     // Do the multiplies, rotating with vext to get all combinations
-    uint8x16_t d = vreinterpretq_u8_p16(vmull_p8(a, b));                // D = A0 * B0
-    uint8x16_t e = vreinterpretq_u8_p16(vmull_p8(a, vext_p8(b, b, 1))); // E = A0 * B1
-    uint8x16_t f = vreinterpretq_u8_p16(vmull_p8(vext_p8(a, a, 1), b)); // F = A1 * B0
-    uint8x16_t g = vreinterpretq_u8_p16(vmull_p8(a, vext_p8(b, b, 2))); // G = A0 * B2
-    uint8x16_t h = vreinterpretq_u8_p16(vmull_p8(vext_p8(a, a, 2), b)); // H = A2 * B0
-    uint8x16_t i = vreinterpretq_u8_p16(vmull_p8(a, vext_p8(b, b, 3))); // I = A0 * B3
-    uint8x16_t j = vreinterpretq_u8_p16(vmull_p8(vext_p8(a, a, 3), b)); // J = A3 * B0
-    uint8x16_t k = vreinterpretq_u8_p16(vmull_p8(a, vext_p8(b, b, 4))); // L = A0 * B4
+    uint8x16_t d = vreinterpretq_u8_p16(vmull_p8(a, b));                 // D = A0 * B0
+    uint8x16_t e = vreinterpretq_u8_p16(vmull_p8(a, vext_p8(b, b, 1)));  // E = A0 * B1
+    uint8x16_t f = vreinterpretq_u8_p16(vmull_p8(vext_p8(a, a, 1), b));  // F = A1 * B0
+    uint8x16_t g = vreinterpretq_u8_p16(vmull_p8(a, vext_p8(b, b, 2)));  // G = A0 * B2
+    uint8x16_t h = vreinterpretq_u8_p16(vmull_p8(vext_p8(a, a, 2), b));  // H = A2 * B0
+    uint8x16_t i = vreinterpretq_u8_p16(vmull_p8(a, vext_p8(b, b, 3)));  // I = A0 * B3
+    uint8x16_t j = vreinterpretq_u8_p16(vmull_p8(vext_p8(a, a, 3), b));  // J = A3 * B0
+    uint8x16_t k = vreinterpretq_u8_p16(vmull_p8(a, vext_p8(b, b, 4)));  // L = A0 * B4
 
     // Add cross products
-    uint8x16_t l = veorq_u8(e, f); // L = E + F
-    uint8x16_t m = veorq_u8(g, h); // M = G + H
-    uint8x16_t n = veorq_u8(i, j); // N = I + J
+    uint8x16_t l = veorq_u8(e, f);  // L = E + F
+    uint8x16_t m = veorq_u8(g, h);  // M = G + H
+    uint8x16_t n = veorq_u8(i, j);  // N = I + J
 
     // Interleave. Using vzip1 and vzip2 prevents Clang from emitting TBL
     // instructions.
@@ -117,16 +117,16 @@ TARGET_WITH_SIMD uint64x2_t sse2neon_vmull_p64(uint64x1_t _a, uint64x1_t _b)
     uint8x16_t t2 = vreinterpretq_u8_u64(vuzp1q_u64(vreinterpretq_u64_u8(t2t3_l), vreinterpretq_u64_u8(t2t3_h)));
     uint8x16_t t3 = vreinterpretq_u8_u64(vuzp2q_u64(vreinterpretq_u64_u8(t2t3_l), vreinterpretq_u64_u8(t2t3_h)));
 #else
-    uint8x16_t t1    = vcombine_u8(vget_high_u8(t0t1_l), vget_high_u8(t0t1_h));
-    uint8x16_t t0    = vcombine_u8(vget_low_u8(t0t1_l), vget_low_u8(t0t1_h));
-    uint8x16_t t3    = vcombine_u8(vget_high_u8(t2t3_l), vget_high_u8(t2t3_h));
-    uint8x16_t t2    = vcombine_u8(vget_low_u8(t2t3_l), vget_low_u8(t2t3_h));
+    uint8x16_t t1 = vcombine_u8(vget_high_u8(t0t1_l), vget_high_u8(t0t1_h));
+    uint8x16_t t0 = vcombine_u8(vget_low_u8(t0t1_l), vget_low_u8(t0t1_h));
+    uint8x16_t t3 = vcombine_u8(vget_high_u8(t2t3_l), vget_high_u8(t2t3_h));
+    uint8x16_t t2 = vcombine_u8(vget_low_u8(t2t3_l), vget_low_u8(t2t3_h));
 #endif
     // Shift the cross products
-    uint8x16_t t0_shift = vextq_u8(t0, t0, 15); // t0 << 8
-    uint8x16_t t1_shift = vextq_u8(t1, t1, 14); // t1 << 16
-    uint8x16_t t2_shift = vextq_u8(t2, t2, 13); // t2 << 24
-    uint8x16_t t3_shift = vextq_u8(t3, t3, 12); // t3 << 32
+    uint8x16_t t0_shift = vextq_u8(t0, t0, 15);  // t0 << 8
+    uint8x16_t t1_shift = vextq_u8(t1, t1, 14);  // t1 << 16
+    uint8x16_t t2_shift = vextq_u8(t2, t2, 13);  // t2 << 24
+    uint8x16_t t3_shift = vextq_u8(t3, t3, 12);  // t3 << 32
 
     // Accumulate the products
     uint8x16_t cross1 = veorq_u8(t0_shift, t1_shift);
@@ -138,9 +138,9 @@ TARGET_WITH_SIMD uint64x2_t sse2neon_vmull_p64(uint64x1_t _a, uint64x1_t _b)
 
 TARGET_WITH_SIMD uint64x2_t mm_shuffle_epi8(uint64x2_t a, uint64x2_t b)
 {
-    uint8x16_t tbl        = vreinterpretq_u8_u64(a);         // input a
-    uint8x16_t idx        = vreinterpretq_u8_u64(b);         // input b
-    uint8x16_t idx_masked = vandq_u8(idx, vdupq_n_u8(0x8F)); // avoid using meaningless bits
+    uint8x16_t tbl        = vreinterpretq_u8_u64(a);          // input a
+    uint8x16_t idx        = vreinterpretq_u8_u64(b);          // input b
+    uint8x16_t idx_masked = vandq_u8(idx, vdupq_n_u8(0x8F));  // avoid using meaningless bits
 #if defined(__aarch64__)
     return vreinterpretq_u64_u8(vqtbl1q_u8(tbl, idx_masked));
 #else
@@ -154,13 +154,13 @@ TARGET_WITH_SIMD uint64x2_t mm_shuffle_epi8(uint64x2_t a, uint64x2_t b)
 TARGET_WITH_SIMD uint64x2_t mm_srli_si128(uint64x2_t a, int imm)
 {
     uint8x16_t tmp[2] = {vreinterpretq_u8_u64(a), vdupq_n_u8(0)};
-    return vreinterpretq_u64_u8(vld1q_u8(((uint8_t const*)tmp) + imm));
+    return vreinterpretq_u64_u8(vld1q_u8(((uint8_t const *)tmp) + imm));
 }
 
 TARGET_WITH_SIMD uint64x2_t mm_slli_si128(uint64x2_t a, int imm)
 {
     uint8x16_t tmp[2] = {vdupq_n_u8(0), vreinterpretq_u8_u64(a)};
-    return vreinterpretq_u64_u8(vld1q_u8(((uint8_t const*)tmp) + (16 - imm)));
+    return vreinterpretq_u64_u8(vld1q_u8(((uint8_t const *)tmp) + (16 - imm)));
 }
 
 #endif

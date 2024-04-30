@@ -22,16 +22,16 @@
 
 #define VERIFY_SIZE 1048576
 
-int32_t aaruf_verify_image(void* context)
+int32_t aaruf_verify_image(void *context)
 {
-    aaruformatContext* ctx;
+    aaruformatContext *ctx;
     uint64_t           crc64;
     int                i;
     IndexHeader        index_header;
-    IndexEntry*        index_entries;
+    IndexEntry        *index_entries;
     size_t             read_bytes;
-    void*              buffer;
-    crc64_ctx*         crc64_context;
+    void              *buffer;
+    crc64_ctx         *crc64_context;
     BlockHeader        block_header;
     uint64_t           verified_bytes;
     DdtHeader          ddt_header;
@@ -81,7 +81,7 @@ int32_t aaruf_verify_image(void* context)
         return AARUF_ERROR_CANNOT_READ_INDEX;
     }
 
-    crc64 = aaruf_crc64_data((const uint8_t*)index_entries, sizeof(IndexEntry) * index_header.entries);
+    crc64 = aaruf_crc64_data((const uint8_t *)index_entries, sizeof(IndexEntry) * index_header.entries);
 
     // Due to how C# wrote it, it is effectively reversed
     if(ctx->header.imageMajorVersion <= AARUF_VERSION) crc64 = bswap_64(crc64);
@@ -104,9 +104,7 @@ int32_t aaruf_verify_image(void* context)
 
     for(i = 0; i < index_header.entries; i++)
     {
-        fprintf(stderr,
-                "Checking block with type %4.4s at position %" PRIu64 "\n",
-                (char*)&index_entries[i].blockType,
+        fprintf(stderr, "Checking block with type %4.4s at position %" PRIu64 "\n", (char *)&index_entries[i].blockType,
                 index_entries[i].offset);
 
         fseek(ctx->imageStream, index_entries[i].offset, SEEK_SET);
@@ -233,7 +231,9 @@ int32_t aaruf_verify_image(void* context)
                 }
 
                 break;
-            default: fprintf(stderr, "Ignoring block type %4.4s.\n", (char*)&index_entries[i].blockType); break;
+            default:
+                fprintf(stderr, "Ignoring block type %4.4s.\n", (char *)&index_entries[i].blockType);
+                break;
         }
     }
 

@@ -34,9 +34,9 @@ static uint8_t b64[] = {0x41, 0x42, 0x43, 0x44, 0x45, 0x46, 0x47, 0x48, 0x49, 0x
                         0x67, 0x68, 0x69, 0x6A, 0x6B, 0x6C, 0x6D, 0x6E, 0x6F, 0x70, 0x71, 0x72, 0x73, 0x74, 0x75, 0x76,
                         0x77, 0x78, 0x79, 0x7A, 0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x39, 0x2B, 0x2F};
 
-AARU_EXPORT spamsum_ctx* AARU_CALL aaruf_spamsum_init(void)
+AARU_EXPORT spamsum_ctx *AARU_CALL aaruf_spamsum_init(void)
 {
-    spamsum_ctx* ctx = (spamsum_ctx*)malloc(sizeof(spamsum_ctx));
+    spamsum_ctx *ctx = (spamsum_ctx *)malloc(sizeof(spamsum_ctx));
     if(!ctx) return NULL;
 
     memset(ctx, 0, sizeof(spamsum_ctx));
@@ -48,7 +48,7 @@ AARU_EXPORT spamsum_ctx* AARU_CALL aaruf_spamsum_init(void)
     return ctx;
 }
 
-AARU_EXPORT int AARU_CALL aaruf_spamsum_update(spamsum_ctx* ctx, const uint8_t* data, uint32_t len)
+AARU_EXPORT int AARU_CALL aaruf_spamsum_update(spamsum_ctx *ctx, const uint8_t *data, uint32_t len)
 {
     int i;
     if(!ctx || !data) return -1;
@@ -60,16 +60,16 @@ AARU_EXPORT int AARU_CALL aaruf_spamsum_update(spamsum_ctx* ctx, const uint8_t* 
     return 0;
 }
 
-AARU_EXPORT void AARU_CALL aaruf_spamsum_free(spamsum_ctx* ctx)
+AARU_EXPORT void AARU_CALL aaruf_spamsum_free(spamsum_ctx *ctx)
 {
     if(ctx) free(ctx);
 }
 
-#define ROLL_SUM(ctx) ((ctx)->roll.h1 + (ctx)->roll.h2 + (ctx)->roll.h3)
-#define SUM_HASH(c, h) (((h)*HASH_PRIME) ^ (c));
+#define ROLL_SUM(ctx)    ((ctx)->roll.h1 + (ctx)->roll.h2 + (ctx)->roll.h3)
+#define SUM_HASH(c, h)   (((h) * HASH_PRIME) ^ (c));
 #define SSDEEP_BS(index) (MIN_BLOCKSIZE << (index))
 
-AARU_LOCAL inline void fuzzy_engine_step(spamsum_ctx* ctx, uint8_t c)
+AARU_LOCAL inline void fuzzy_engine_step(spamsum_ctx *ctx, uint8_t c)
 {
     uint32_t i;
     /* At each character we update the rolling hash and the normal hashes.
@@ -122,7 +122,7 @@ AARU_LOCAL inline void fuzzy_engine_step(spamsum_ctx* ctx, uint8_t c)
     }
 }
 
-AARU_LOCAL inline void roll_hash(spamsum_ctx* ctx, uint8_t c)
+AARU_LOCAL inline void roll_hash(spamsum_ctx *ctx, uint8_t c)
 {
     ctx->roll.h2 -= ctx->roll.h1;
     ctx->roll.h2 += ROLLING_WINDOW * c;
@@ -140,7 +140,7 @@ AARU_LOCAL inline void roll_hash(spamsum_ctx* ctx, uint8_t c)
     ctx->roll.h3 ^= c;
 }
 
-AARU_LOCAL inline void fuzzy_try_reduce_blockhash(spamsum_ctx* ctx)
+AARU_LOCAL inline void fuzzy_try_reduce_blockhash(spamsum_ctx *ctx)
 {
     // assert(ctx->bh_start < ctx->bh_end);
 
@@ -160,7 +160,7 @@ AARU_LOCAL inline void fuzzy_try_reduce_blockhash(spamsum_ctx* ctx)
     ++ctx->bh_start;
 }
 
-AARU_LOCAL inline void fuzzy_try_fork_blockhash(spamsum_ctx* ctx)
+AARU_LOCAL inline void fuzzy_try_fork_blockhash(spamsum_ctx *ctx)
 {
     if(ctx->bh_end >= NUM_BLOCKHASHES) return;
 
@@ -176,7 +176,7 @@ AARU_LOCAL inline void fuzzy_try_fork_blockhash(spamsum_ctx* ctx)
     ++ctx->bh_end;
 }
 
-AARU_EXPORT int AARU_CALL aaruf_spamsum_final(spamsum_ctx* ctx, uint8_t* result)
+AARU_EXPORT int AARU_CALL aaruf_spamsum_final(spamsum_ctx *ctx, uint8_t *result)
 {
     uint32_t bi     = ctx->bh_start;
     uint32_t h      = ROLL_SUM(ctx);
@@ -206,7 +206,7 @@ AARU_EXPORT int AARU_CALL aaruf_spamsum_final(spamsum_ctx* ctx, uint8_t* result)
 
     // assert(!(bi > 0 && ctx->bh[bi].d_len < SPAMSUM_LENGTH / 2));
 
-    int i = snprintf((char*)result, (size_t)remain, "%lu:", (unsigned long)SSDEEP_BS(bi));
+    int i = snprintf((char *)result, (size_t)remain, "%lu:", (unsigned long)SSDEEP_BS(bi));
 
     if(i <= 0) /* Maybe snprintf has set errno here? */
         return -1;

@@ -8,9 +8,9 @@
 // by Jehiah Czebotar 2011 - jehiah@gmail.com
 // this code is in the public domain http://unlicense.org/
 
-void* find_in_cache(struct CacheHeader* cache, char* key)
+void *find_in_cache(struct CacheHeader *cache, char *key)
 {
-    struct CacheEntry* entry;
+    struct CacheEntry *entry;
     HASH_FIND_STR(cache->cache, key, entry);
     if(entry)
     {
@@ -22,7 +22,7 @@ void* find_in_cache(struct CacheHeader* cache, char* key)
     return NULL;
 }
 
-void add_to_cache(struct CacheHeader* cache, char* key, void* value)
+void add_to_cache(struct CacheHeader *cache, char *key, void *value)
 {
     struct CacheEntry *entry, *tmp_entry;
     // TODO: Is this needed or we're just losing cycles? uthash does not free the entry
@@ -45,9 +45,9 @@ void add_to_cache(struct CacheHeader* cache, char* key, void* value)
     }
 }
 
-FORCE_INLINE char* int64_to_string(uint64_t number)
+FORCE_INLINE char *int64_to_string(uint64_t number)
 {
-    char* charKey;
+    char *charKey;
 
     charKey = malloc(17);
 
@@ -72,12 +72,12 @@ FORCE_INLINE char* int64_to_string(uint64_t number)
     return charKey;
 }
 
-void* find_in_cache_uint64(struct CacheHeader* cache, uint64_t key)
+void *find_in_cache_uint64(struct CacheHeader *cache, uint64_t key)
 {
     return find_in_cache(cache, int64_to_string(key));
 }
 
-void add_to_cache_uint64(struct CacheHeader* cache, uint64_t key, void* value)
+void add_to_cache_uint64(struct CacheHeader *cache, uint64_t key, void *value)
 {
     return add_to_cache(cache, int64_to_string(key), value);
 }

@@ -29,4 +29,4 @@ TARGET_WITH_SIMD uint64x2_t          mm_slli_si128(uint64x2_t a, int imm);
 
 #endif
 
-#endif // LIBAARUFORMAT_NATIVE_ARM_VMULL_H
+#endif  // LIBAARUFORMAT_NATIVE_ARM_VMULL_H

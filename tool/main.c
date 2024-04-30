@@ -111,7 +111,7 @@ void usage_verify_sectors()
     printf("\t<filename>\tPath to AaruFormat image to verify.\n");
 }
 
-int main(int argc, char* argv[])
+int main(int argc, char *argv[])
 {
     uint64_t sector_no = 0;
 

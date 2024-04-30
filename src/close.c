@@ -26,11 +26,11 @@
 
 #include <aaruformat.h>
 
-int aaruf_close(void* context)
+int aaruf_close(void *context)
 {
     int            i;
-    mediaTagEntry* mediaTag;
-    mediaTagEntry* tmpMediaTag;
+    mediaTagEntry *mediaTag;
+    mediaTagEntry *tmpMediaTag;
 
     if(context == NULL)
     {
@@ -38,7 +38,7 @@ int aaruf_close(void* context)
         return -1;
     }
 
-    aaruformatContext* ctx = context;
+    aaruformatContext *ctx = context;
 
     // Not a libaaruformat context
     if(ctx->magic != AARU_MAGIC)
@@ -77,7 +77,7 @@ int aaruf_close(void* context)
         }
     }
 
-#ifdef __linux__ // TODO: Implement
+#ifdef __linux__  // TODO: Implement
     if(!ctx->inMemoryDdt)
     {
         munmap(ctx->userDataDdt, ctx->mappedMemoryDdtSize);

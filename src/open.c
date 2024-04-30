@@ -28,29 +28,29 @@
 
 #include <aaruformat.h>
 
-void* aaruf_open(const char* filepath)
+void *aaruf_open(const char *filepath)
 {
-    aaruformatContext* ctx;
+    aaruformatContext *ctx;
     int                errorNo;
     size_t             readBytes;
     long               pos;
     IndexHeader        idxHeader;
-    IndexEntry*        idxEntries;
-    uint8_t*           data;
-    uint8_t*           cmpData;
-    uint8_t*           cstData;
-    uint32_t*          cdDdt;
+    IndexEntry        *idxEntries;
+    uint8_t           *data;
+    uint8_t           *cmpData;
+    uint8_t           *cstData;
+    uint32_t          *cdDdt;
     uint64_t           crc64;
     int                i, j, k;
     uint16_t           e;
     uint8_t            lzmaProperties[LZMA_PROPERTIES_LENGTH];
     size_t             lzmaSize;
     ChecksumHeader     checksum_header;
-    ChecksumEntry*     checksum_entry;
-    mediaTagEntry*     mediaTag;
-    mediaTagEntry*     oldMediaTag;
+    ChecksumEntry     *checksum_entry;
+    mediaTagEntry     *mediaTag;
+    mediaTagEntry     *oldMediaTag;
 
-    ctx = (aaruformatContext*)malloc(sizeof(aaruformatContext));
+    ctx = (aaruformatContext *)malloc(sizeof(aaruformatContext));
     memset(ctx, 0, sizeof(aaruformatContext));
 
     if(ctx == NULL)
@@ -97,12 +97,10 @@ void* aaruf_open(const char* filepath)
         return NULL;
     }
 
-    fprintf(stderr,
-            "libaaruformat: Opening image version %d.%d\n",
-            ctx->header.imageMajorVersion,
+    fprintf(stderr, "libaaruformat: Opening image version %d.%d\n", ctx->header.imageMajorVersion,
             ctx->header.imageMinorVersion);
 
-    ctx->readableSectorTags = (bool*)malloc(sizeof(bool) * MaxSectorTag);
+    ctx->readableSectorTags = (bool *)malloc(sizeof(bool) * MaxSectorTag);
 
     if(ctx->readableSectorTags == NULL)
     {
@@ -115,20 +113,18 @@ void* aaruf_open(const char* filepath)
     memset(ctx->readableSectorTags, 0, sizeof(bool) * MaxSectorTag);
 
     ctx->imageInfo.Application        = ctx->header.application;
-    ctx->imageInfo.ApplicationVersion = (uint8_t*)malloc(32);
+    ctx->imageInfo.ApplicationVersion = (uint8_t *)malloc(32);
     if(ctx->imageInfo.ApplicationVersion != NULL)
     {
         memset(ctx->imageInfo.ApplicationVersion, 0, 32);
-        sprintf((char*)ctx->imageInfo.ApplicationVersion,
-                "%d.%d",
-                ctx->header.applicationMajorVersion,
+        sprintf((char *)ctx->imageInfo.ApplicationVersion, "%d.%d", ctx->header.applicationMajorVersion,
                 ctx->header.applicationMinorVersion);
     }
-    ctx->imageInfo.Version = (uint8_t*)malloc(32);
+    ctx->imageInfo.Version = (uint8_t *)malloc(32);
     if(ctx->imageInfo.Version != NULL)
     {
         memset(ctx->imageInfo.Version, 0, 32);
-        sprintf((char*)ctx->imageInfo.Version, "%d.%d", ctx->header.imageMajorVersion, ctx->header.imageMinorVersion);
+        sprintf((char *)ctx->imageInfo.Version, "%d.%d", ctx->header.imageMajorVersion, ctx->header.imageMinorVersion);
     }
     ctx->imageInfo.MediaType = ctx->header.mediaType;
 
@@ -161,12 +157,10 @@ void* aaruf_open(const char* filepath)
         return NULL;
     }
 
-    fprintf(stderr,
-            "libaaruformat: Index at %" PRIu64 " contains %d entries\n",
-            ctx->header.indexOffset,
+    fprintf(stderr, "libaaruformat: Index at %" PRIu64 " contains %d entries\n", ctx->header.indexOffset,
             idxHeader.entries);
 
-    idxEntries = (IndexEntry*)malloc(sizeof(IndexEntry) * idxHeader.entries);
+    idxEntries = (IndexEntry *)malloc(sizeof(IndexEntry) * idxHeader.entries);
 
     if(idxEntries == NULL)
     {
@@ -191,11 +185,8 @@ void* aaruf_open(const char* filepath)
 
     for(i = 0; i < idxHeader.entries; i++)
     {
-        fprintf(stderr,
-                "libaaruformat: Block type %4.4s with data type %d is indexed to be at %" PRIu64 "\n",
-                (char*)&idxEntries[i].blockType,
-                idxEntries[i].dataType,
-                idxEntries[i].offset);
+        fprintf(stderr, "libaaruformat: Block type %4.4s with data type %d is indexed to be at %" PRIu64 "\n",
+                (char *)&idxEntries[i].blockType, idxEntries[i].dataType, idxEntries[i].offset);
     }
 
     bool foundUserDataDdt    = false;
@@ -208,8 +199,7 @@ void* aaruf_open(const char* filepath)
         {
             fprintf(stderr,
                     "libaaruformat: Could not seek to %" PRIu64 " as indicated by index entry %d, continuing...\n",
-                    idxEntries[i].offset,
-                    i);
+                    idxEntries[i].offset, i);
 
             continue;
         }
@@ -227,8 +217,8 @@ void* aaruf_open(const char* filepath)
 
                 if(readBytes != sizeof(BlockHeader))
                 {
-                    fprintf(
-                        stderr, "libaaruformat: Could not read block header at %" PRIu64 "\n", idxEntries[i].offset);
+                    fprintf(stderr, "libaaruformat: Could not read block header at %" PRIu64 "\n",
+                            idxEntries[i].offset);
 
                     break;
                 }
@@ -246,8 +236,7 @@ void* aaruf_open(const char* filepath)
 
                 if(blockHeader.identifier != idxEntries[i].blockType)
                 {
-                    fprintf(stderr,
-                            "libaaruformat: Incorrect identifier for data block at position %" PRIu64 "\n",
+                    fprintf(stderr, "libaaruformat: Incorrect identifier for data block at position %" PRIu64 "\n",
                             idxEntries[i].offset);
                     break;
                 }
@@ -257,39 +246,33 @@ void* aaruf_open(const char* filepath)
                     fprintf(stderr,
                             "libaaruformat: Expected block with data type %4.4s at position %" PRIu64
                             " but found data type %4.4s\n",
-                            (char*)&idxEntries[i].blockType,
-                            idxEntries[i].offset,
-                            (char*)&blockHeader.type);
+                            (char *)&idxEntries[i].blockType, idxEntries[i].offset, (char *)&blockHeader.type);
                     break;
                 }
 
-                fprintf(stderr,
-                        "libaaruformat: Found data block with type %4.4s at position %" PRIu64 "\n",
-                        (char*)&idxEntries[i].blockType,
-                        idxEntries[i].offset);
+                fprintf(stderr, "libaaruformat: Found data block with type %4.4s at position %" PRIu64 "\n",
+                        (char *)&idxEntries[i].blockType, idxEntries[i].offset);
 
                 if(blockHeader.compression == Lzma || blockHeader.compression == LzmaClauniaSubchannelTransform)
                 {
                     if(blockHeader.compression == LzmaClauniaSubchannelTransform &&
                        blockHeader.type != CdSectorSubchannel)
                     {
-                        fprintf(stderr,
-                                "Invalid compression type %d for block with data type %d, continuing...\n",
-                                blockHeader.compression,
-                                blockHeader.type);
+                        fprintf(stderr, "Invalid compression type %d for block with data type %d, continuing...\n",
+                                blockHeader.compression, blockHeader.type);
                         break;
                     }
 
                     lzmaSize = blockHeader.cmpLength - LZMA_PROPERTIES_LENGTH;
 
-                    cmpData = (uint8_t*)malloc(lzmaSize);
+                    cmpData = (uint8_t *)malloc(lzmaSize);
                     if(cmpData == NULL)
                     {
                         fprintf(stderr, "Cannot allocate memory for block, continuing...\n");
                         break;
                     }
 
-                    data = (uint8_t*)malloc(blockHeader.length);
+                    data = (uint8_t *)malloc(blockHeader.length);
                     if(data == NULL)
                     {
                         fprintf(stderr, "Cannot allocate memory for block, continuing...\n");
@@ -316,8 +299,8 @@ void* aaruf_open(const char* filepath)
                     }
 
                     readBytes = blockHeader.length;
-                    errorNo   = aaruf_lzma_decode_buffer(
-                        data, &readBytes, cmpData, &lzmaSize, lzmaProperties, LZMA_PROPERTIES_LENGTH);
+                    errorNo   = aaruf_lzma_decode_buffer(data, &readBytes, cmpData, &lzmaSize, lzmaProperties,
+                                                         LZMA_PROPERTIES_LENGTH);
 
                     if(errorNo != 0)
                     {
@@ -363,7 +346,7 @@ void* aaruf_open(const char* filepath)
                 }
                 else if(blockHeader.compression == None)
                 {
-                    data = (uint8_t*)malloc(blockHeader.length);
+                    data = (uint8_t *)malloc(blockHeader.length);
                     if(data == NULL)
                     {
                         fprintf(stderr, "Cannot allocate memory for block, continuing...\n");
@@ -381,8 +364,7 @@ void* aaruf_open(const char* filepath)
                 }
                 else
                 {
-                    fprintf(stderr,
-                            "libaaruformat: Found unknown compression type %d, continuing...\n",
+                    fprintf(stderr, "libaaruformat: Found unknown compression type %d, continuing...\n",
                             blockHeader.compression);
                     break;
                 }
@@ -399,8 +381,7 @@ void* aaruf_open(const char* filepath)
                         fprintf(stderr,
                                 "libaaruformat: Incorrect CRC found: 0x%" PRIx64 " found, expected 0x%" PRIx64
                                 ", continuing...\n",
-                                crc64,
-                                blockHeader.crc64);
+                                crc64, blockHeader.crc64);
                         break;
                     }
                 }
@@ -420,7 +401,8 @@ void* aaruf_open(const char* filepath)
                         break;
                     case CdSectorSuffix:
                     case CdSectorSuffixCorrected:
-                        if(idxEntries[i].dataType == CdSectorSuffixCorrected) ctx->sectorSuffixCorrected = data;
+                        if(idxEntries[i].dataType == CdSectorSuffixCorrected)
+                            ctx->sectorSuffixCorrected = data;
                         else
                             ctx->sectorSuffix = data;
 
@@ -440,9 +422,11 @@ void* aaruf_open(const char* filepath)
                         ctx->sectorSubchannel                   = data;
                         ctx->readableSectorTags[AppleSectorTag] = true;
                         break;
-                    case CompactDiscMode2Subheader: ctx->mode2Subheaders = data; break;
+                    case CompactDiscMode2Subheader:
+                        ctx->mode2Subheaders = data;
+                        break;
                     default:
-                        mediaTag = (mediaTagEntry*)malloc(sizeof(mediaTagEntry));
+                        mediaTag = (mediaTagEntry *)malloc(sizeof(mediaTagEntry));
 
                         if(mediaTag == NULL)
                         {
@@ -474,8 +458,8 @@ void* aaruf_open(const char* filepath)
 
                 if(readBytes != sizeof(DdtHeader))
                 {
-                    fprintf(
-                        stderr, "libaaruformat: Could not read block header at %" PRIu64 "\n", idxEntries[i].offset);
+                    fprintf(stderr, "libaaruformat: Could not read block header at %" PRIu64 "\n",
+                            idxEntries[i].offset);
 
                     break;
                 }
@@ -496,14 +480,14 @@ void* aaruf_open(const char* filepath)
                         case Lzma:
                             lzmaSize = ddtHeader.cmpLength - LZMA_PROPERTIES_LENGTH;
 
-                            cmpData = (uint8_t*)malloc(lzmaSize);
+                            cmpData = (uint8_t *)malloc(lzmaSize);
                             if(cmpData == NULL)
                             {
                                 fprintf(stderr, "Cannot allocate memory for DDT, continuing...\n");
                                 break;
                             }
 
-                            ctx->userDataDdt = (uint64_t*)malloc(ddtHeader.length);
+                            ctx->userDataDdt = (uint64_t *)malloc(ddtHeader.length);
                             if(ctx->userDataDdt == NULL)
                             {
                                 fprintf(stderr, "Cannot allocate memory for DDT, continuing...\n");
@@ -532,12 +516,8 @@ void* aaruf_open(const char* filepath)
                             }
 
                             readBytes = ddtHeader.length;
-                            errorNo   = aaruf_lzma_decode_buffer((uint8_t*)ctx->userDataDdt,
-                                                               &readBytes,
-                                                               cmpData,
-                                                               &lzmaSize,
-                                                               lzmaProperties,
-                                                               LZMA_PROPERTIES_LENGTH);
+                            errorNo   = aaruf_lzma_decode_buffer((uint8_t *)ctx->userDataDdt, &readBytes, cmpData,
+                                                                 &lzmaSize, lzmaProperties, LZMA_PROPERTIES_LENGTH);
 
                             if(errorNo != 0)
                             {
@@ -573,12 +553,8 @@ void* aaruf_open(const char* filepath)
                         case None:
 #ifdef __linux__
                             ctx->mappedMemoryDdtSize = sizeof(uint64_t) * ddtHeader.entries;
-                            ctx->userDataDdt         = mmap(NULL,
-                                                    ctx->mappedMemoryDdtSize,
-                                                    PROT_READ,
-                                                    MAP_SHARED,
-                                                    fileno(ctx->imageStream),
-                                                    idxEntries[i].offset + sizeof(ddtHeader));
+                            ctx->userDataDdt         = mmap(NULL, ctx->mappedMemoryDdtSize, PROT_READ, MAP_SHARED,
+                                                            fileno(ctx->imageStream), idxEntries[i].offset + sizeof(ddtHeader));
 
                             if(ctx->userDataDdt == MAP_FAILED)
                             {
@@ -589,14 +565,13 @@ void* aaruf_open(const char* filepath)
 
                             ctx->inMemoryDdt = false;
                             break;
-#else // TODO: Implement
+#else  // TODO: Implement
                             fprintf(stderr, "libaaruformat: Uncompressed DDT not yet implemented...\n");
                             foundUserDataDdt = false;
                             break;
 #endif
                         default:
-                            fprintf(stderr,
-                                    "libaaruformat: Found unknown compression type %d, continuing...\n",
+                            fprintf(stderr, "libaaruformat: Found unknown compression type %d, continuing...\n",
                                     blockHeader.compression);
                             foundUserDataDdt = false;
                             break;
@@ -611,14 +586,14 @@ void* aaruf_open(const char* filepath)
                         case Lzma:
                             lzmaSize = ddtHeader.cmpLength - LZMA_PROPERTIES_LENGTH;
 
-                            cmpData = (uint8_t*)malloc(lzmaSize);
+                            cmpData = (uint8_t *)malloc(lzmaSize);
                             if(cmpData == NULL)
                             {
                                 fprintf(stderr, "Cannot allocate memory for DDT, continuing...\n");
                                 break;
                             }
 
-                            cdDdt = (uint32_t*)malloc(ddtHeader.length);
+                            cdDdt = (uint32_t *)malloc(ddtHeader.length);
                             if(cdDdt == NULL)
                             {
                                 fprintf(stderr, "Cannot allocate memory for DDT, continuing...\n");
@@ -647,12 +622,8 @@ void* aaruf_open(const char* filepath)
                             }
 
                             readBytes = ddtHeader.length;
-                            errorNo   = aaruf_lzma_decode_buffer((uint8_t*)cdDdt,
-                                                               &readBytes,
-                                                               cmpData,
-                                                               &lzmaSize,
-                                                               lzmaProperties,
-                                                               LZMA_PROPERTIES_LENGTH);
+                            errorNo   = aaruf_lzma_decode_buffer((uint8_t *)cdDdt, &readBytes, cmpData, &lzmaSize,
+                                                                 lzmaProperties, LZMA_PROPERTIES_LENGTH);
 
                             if(errorNo != 0)
                             {
@@ -680,7 +651,8 @@ void* aaruf_open(const char* filepath)
                                 return NULL;
                             }
 
-                            if(idxEntries[i].dataType == CdSectorPrefixCorrected) ctx->sectorPrefixDdt = cdDdt;
+                            if(idxEntries[i].dataType == CdSectorPrefixCorrected)
+                                ctx->sectorPrefixDdt = cdDdt;
                             else if(idxEntries[i].dataType == CdSectorSuffixCorrected)
                                 ctx->sectorSuffixDdt = cdDdt;
                             else
@@ -690,7 +662,7 @@ void* aaruf_open(const char* filepath)
 
                             // TODO: Check CRC
                         case None:
-                            cdDdt = (uint32_t*)malloc(ddtHeader.entries * sizeof(uint32_t));
+                            cdDdt = (uint32_t *)malloc(ddtHeader.entries * sizeof(uint32_t));
 
                             if(mediaTag == NULL)
                             {
@@ -707,7 +679,8 @@ void* aaruf_open(const char* filepath)
                                 break;
                             }
 
-                            if(idxEntries[i].dataType == CdSectorPrefixCorrected) ctx->sectorPrefixDdt = cdDdt;
+                            if(idxEntries[i].dataType == CdSectorPrefixCorrected)
+                                ctx->sectorPrefixDdt = cdDdt;
                             else if(idxEntries[i].dataType == CdSectorSuffixCorrected)
                                 ctx->sectorSuffixDdt = cdDdt;
                             else
@@ -715,8 +688,7 @@ void* aaruf_open(const char* filepath)
 
                             break;
                         default:
-                            fprintf(stderr,
-                                    "libaaruformat: Found unknown compression type %d, continuing...\n",
+                            fprintf(stderr, "libaaruformat: Found unknown compression type %d, continuing...\n",
                                     blockHeader.compression);
                             break;
                     }
@@ -735,11 +707,8 @@ void* aaruf_open(const char* filepath)
 
                 if(ctx->geometryBlock.identifier == GeometryBlock)
                 {
-                    fprintf(stderr,
-                            "libaaruformat: Geometry set to %d cylinders %d heads %d sectors per track\n",
-                            ctx->geometryBlock.cylinders,
-                            ctx->geometryBlock.heads,
-                            ctx->geometryBlock.sectorsPerTrack);
+                    fprintf(stderr, "libaaruformat: Geometry set to %d cylinders %d heads %d sectors per track\n",
+                            ctx->geometryBlock.cylinders, ctx->geometryBlock.heads, ctx->geometryBlock.sectorsPerTrack);
 
                     ctx->imageInfo.Cylinders       = ctx->geometryBlock.cylinders;
                     ctx->imageInfo.Heads           = ctx->geometryBlock.heads;
@@ -763,15 +732,14 @@ void* aaruf_open(const char* filepath)
                 if(ctx->metadataBlockHeader.identifier != idxEntries[i].blockType)
                 {
                     memset(&ctx->metadataBlockHeader, 0, sizeof(MetadataBlockHeader));
-                    fprintf(stderr,
-                            "libaaruformat: Incorrect identifier for data block at position %" PRIu64 "\n",
+                    fprintf(stderr, "libaaruformat: Incorrect identifier for data block at position %" PRIu64 "\n",
                             idxEntries[i].offset);
                     break;
                 }
 
                 ctx->imageInfo.ImageSize += ctx->metadataBlockHeader.blockSize;
 
-                ctx->metadataBlock = (uint8_t*)malloc(ctx->metadataBlockHeader.blockSize);
+                ctx->metadataBlock = (uint8_t *)malloc(ctx->metadataBlockHeader.blockSize);
 
                 if(ctx->metadataBlock == NULL)
                 {
@@ -793,9 +761,7 @@ void* aaruf_open(const char* filepath)
                 {
                     ctx->imageInfo.MediaSequence     = ctx->metadataBlockHeader.mediaSequence;
                     ctx->imageInfo.LastMediaSequence = ctx->metadataBlockHeader.lastMediaSequence;
-                    fprintf(stderr,
-                            "libaaruformat: Setting media sequence as %d of %d\n",
-                            ctx->imageInfo.MediaSequence,
+                    fprintf(stderr, "libaaruformat: Setting media sequence as %d of %d\n", ctx->imageInfo.MediaSequence,
                             ctx->imageInfo.LastMediaSequence);
                 }
 
@@ -803,11 +769,10 @@ void* aaruf_open(const char* filepath)
                    ctx->metadataBlockHeader.creatorOffset + ctx->metadataBlockHeader.creatorLength <=
                        ctx->metadataBlockHeader.blockSize)
                 {
-                    ctx->imageInfo.Creator = (uint8_t*)malloc(ctx->metadataBlockHeader.creatorLength);
+                    ctx->imageInfo.Creator = (uint8_t *)malloc(ctx->metadataBlockHeader.creatorLength);
                     if(ctx->imageInfo.Creator != NULL)
                     {
-                        memcpy(ctx->imageInfo.Creator,
-                               ctx->metadataBlock + ctx->metadataBlockHeader.creatorOffset,
+                        memcpy(ctx->imageInfo.Creator, ctx->metadataBlock + ctx->metadataBlockHeader.creatorOffset,
                                ctx->metadataBlockHeader.creatorLength);
                     }
                 }
@@ -816,11 +781,10 @@ void* aaruf_open(const char* filepath)
                    ctx->metadataBlockHeader.commentsOffset + ctx->metadataBlockHeader.commentsLength <=
                        ctx->metadataBlockHeader.blockSize)
                 {
-                    ctx->imageInfo.Comments = (uint8_t*)malloc(ctx->metadataBlockHeader.commentsLength);
+                    ctx->imageInfo.Comments = (uint8_t *)malloc(ctx->metadataBlockHeader.commentsLength);
                     if(ctx->imageInfo.Comments != NULL)
                     {
-                        memcpy(ctx->imageInfo.Comments,
-                               ctx->metadataBlock + ctx->metadataBlockHeader.commentsOffset,
+                        memcpy(ctx->imageInfo.Comments, ctx->metadataBlock + ctx->metadataBlockHeader.commentsOffset,
                                ctx->metadataBlockHeader.commentsLength);
                     }
                 }
@@ -829,7 +793,7 @@ void* aaruf_open(const char* filepath)
                    ctx->metadataBlockHeader.mediaTitleOffset + ctx->metadataBlockHeader.mediaTitleLength <=
                        ctx->metadataBlockHeader.blockSize)
                 {
-                    ctx->imageInfo.MediaTitle = (uint8_t*)malloc(ctx->metadataBlockHeader.mediaTitleLength);
+                    ctx->imageInfo.MediaTitle = (uint8_t *)malloc(ctx->metadataBlockHeader.mediaTitleLength);
                     if(ctx->imageInfo.MediaTitle != NULL)
                     {
                         memcpy(ctx->imageInfo.MediaTitle,
@@ -844,7 +808,7 @@ void* aaruf_open(const char* filepath)
                        ctx->metadataBlockHeader.blockSize)
                 {
                     ctx->imageInfo.MediaManufacturer =
-                        (uint8_t*)malloc(ctx->metadataBlockHeader.mediaManufacturerLength);
+                        (uint8_t *)malloc(ctx->metadataBlockHeader.mediaManufacturerLength);
                     if(ctx->imageInfo.MediaManufacturer != NULL)
                     {
                         memcpy(ctx->imageInfo.MediaManufacturer,
@@ -857,7 +821,7 @@ void* aaruf_open(const char* filepath)
                    ctx->metadataBlockHeader.mediaModelOffset + ctx->metadataBlockHeader.mediaModelLength <=
                        ctx->metadataBlockHeader.blockSize)
                 {
-                    ctx->imageInfo.MediaModel = (uint8_t*)malloc(ctx->metadataBlockHeader.mediaModelOffset);
+                    ctx->imageInfo.MediaModel = (uint8_t *)malloc(ctx->metadataBlockHeader.mediaModelOffset);
                     if(ctx->imageInfo.MediaModel != NULL)
                     {
                         memcpy(ctx->imageInfo.MediaModel,
@@ -872,7 +836,7 @@ void* aaruf_open(const char* filepath)
                        ctx->metadataBlockHeader.blockSize)
                 {
                     ctx->imageInfo.MediaSerialNumber =
-                        (uint8_t*)malloc(ctx->metadataBlockHeader.mediaSerialNumberLength);
+                        (uint8_t *)malloc(ctx->metadataBlockHeader.mediaSerialNumberLength);
                     if(ctx->imageInfo.MediaSerialNumber != NULL)
                     {
                         memcpy(ctx->imageInfo.MediaSerialNumber,
@@ -885,7 +849,7 @@ void* aaruf_open(const char* filepath)
                    ctx->metadataBlockHeader.mediaBarcodeOffset + ctx->metadataBlockHeader.mediaBarcodeLength <=
                        ctx->metadataBlockHeader.blockSize)
                 {
-                    ctx->imageInfo.MediaBarcode = (uint8_t*)malloc(ctx->metadataBlockHeader.mediaBarcodeLength);
+                    ctx->imageInfo.MediaBarcode = (uint8_t *)malloc(ctx->metadataBlockHeader.mediaBarcodeLength);
                     if(ctx->imageInfo.MediaBarcode != NULL)
                     {
                         memcpy(ctx->imageInfo.MediaBarcode,
@@ -898,7 +862,7 @@ void* aaruf_open(const char* filepath)
                    ctx->metadataBlockHeader.mediaPartNumberOffset + ctx->metadataBlockHeader.mediaPartNumberLength <=
                        ctx->metadataBlockHeader.blockSize)
                 {
-                    ctx->imageInfo.MediaPartNumber = (uint8_t*)malloc(ctx->metadataBlockHeader.mediaPartNumberLength);
+                    ctx->imageInfo.MediaPartNumber = (uint8_t *)malloc(ctx->metadataBlockHeader.mediaPartNumberLength);
                     if(ctx->imageInfo.MediaPartNumber != NULL)
                     {
                         memcpy(ctx->imageInfo.MediaPartNumber,
@@ -913,7 +877,7 @@ void* aaruf_open(const char* filepath)
                        ctx->metadataBlockHeader.blockSize)
                 {
                     ctx->imageInfo.DriveManufacturer =
-                        (uint8_t*)malloc(ctx->metadataBlockHeader.driveManufacturerLength);
+                        (uint8_t *)malloc(ctx->metadataBlockHeader.driveManufacturerLength);
                     if(ctx->imageInfo.DriveManufacturer != NULL)
                     {
                         memcpy(ctx->imageInfo.DriveManufacturer,
@@ -926,7 +890,7 @@ void* aaruf_open(const char* filepath)
                    ctx->metadataBlockHeader.driveModelOffset + ctx->metadataBlockHeader.driveModelLength <=
                        ctx->metadataBlockHeader.blockSize)
                 {
-                    ctx->imageInfo.DriveModel = (uint8_t*)malloc(ctx->metadataBlockHeader.driveModelLength);
+                    ctx->imageInfo.DriveModel = (uint8_t *)malloc(ctx->metadataBlockHeader.driveModelLength);
                     if(ctx->imageInfo.DriveModel != NULL)
                     {
                         memcpy(ctx->imageInfo.DriveModel,
@@ -941,7 +905,7 @@ void* aaruf_open(const char* filepath)
                        ctx->metadataBlockHeader.blockSize)
                 {
                     ctx->imageInfo.DriveSerialNumber =
-                        (uint8_t*)malloc(ctx->metadataBlockHeader.driveSerialNumberLength);
+                        (uint8_t *)malloc(ctx->metadataBlockHeader.driveSerialNumberLength);
                     if(ctx->imageInfo.DriveSerialNumber != NULL)
                     {
                         memcpy(ctx->imageInfo.DriveSerialNumber,
@@ -956,7 +920,7 @@ void* aaruf_open(const char* filepath)
                        ctx->metadataBlockHeader.blockSize)
                 {
                     ctx->imageInfo.DriveFirmwareRevision =
-                        (uint8_t*)malloc(ctx->metadataBlockHeader.driveFirmwareRevisionLength);
+                        (uint8_t *)malloc(ctx->metadataBlockHeader.driveFirmwareRevisionLength);
                     if(ctx->imageInfo.DriveFirmwareRevision != NULL)
                     {
                         memcpy(ctx->imageInfo.DriveFirmwareRevision,
@@ -979,14 +943,13 @@ void* aaruf_open(const char* filepath)
                 if(ctx->tracksHeader.identifier != TracksBlock)
                 {
                     memset(&ctx->tracksHeader, 0, sizeof(TracksHeader));
-                    fprintf(stderr,
-                            "libaaruformat: Incorrect identifier for data block at position %" PRIu64 "\n",
+                    fprintf(stderr, "libaaruformat: Incorrect identifier for data block at position %" PRIu64 "\n",
                             idxEntries[i].offset);
                 }
 
                 ctx->imageInfo.ImageSize += sizeof(TrackEntry) * ctx->tracksHeader.entries;
 
-                ctx->trackEntries = (TrackEntry*)malloc(sizeof(TrackEntry) * ctx->tracksHeader.entries);
+                ctx->trackEntries = (TrackEntry *)malloc(sizeof(TrackEntry) * ctx->tracksHeader.entries);
 
                 if(ctx->trackEntries == NULL)
                 {
@@ -1004,8 +967,8 @@ void* aaruf_open(const char* filepath)
                     fprintf(stderr, "libaaruformat: Could not read metadata block, continuing...\n");
                 }
 
-                crc64 =
-                    aaruf_crc64_data((const uint8_t*)ctx->trackEntries, ctx->tracksHeader.entries * sizeof(TrackEntry));
+                crc64 = aaruf_crc64_data((const uint8_t *)ctx->trackEntries,
+                                         ctx->tracksHeader.entries * sizeof(TrackEntry));
 
                 // Due to how C# wrote it, it is effectively reversed
                 if(ctx->header.imageMajorVersion <= AARUF_VERSION) crc64 = bswap_64(crc64);
@@ -1015,14 +978,11 @@ void* aaruf_open(const char* filepath)
                     fprintf(stderr,
                             "libaaruformat: Incorrect CRC found: 0x%" PRIx64 " found, expected 0x%" PRIx64
                             ", continuing...\n",
-                            crc64,
-                            ctx->tracksHeader.crc64);
+                            crc64, ctx->tracksHeader.crc64);
                     break;
                 }
 
-                fprintf(stderr,
-                        "libaaruformat: Found %d tracks at position %" PRIu64 ".\n",
-                        ctx->tracksHeader.entries,
+                fprintf(stderr, "libaaruformat: Found %d tracks at position %" PRIu64 ".\n", ctx->tracksHeader.entries,
                         idxEntries[i].offset);
 
                 ctx->imageInfo.HasPartitions = true;
@@ -1060,14 +1020,13 @@ void* aaruf_open(const char* filepath)
                 if(ctx->cicmBlockHeader.identifier != CicmBlock)
                 {
                     memset(&ctx->cicmBlockHeader, 0, sizeof(CicmMetadataBlock));
-                    fprintf(stderr,
-                            "libaaruformat: Incorrect identifier for data block at position %" PRIu64 "\n",
+                    fprintf(stderr, "libaaruformat: Incorrect identifier for data block at position %" PRIu64 "\n",
                             idxEntries[i].offset);
                 }
 
                 ctx->imageInfo.ImageSize += ctx->cicmBlockHeader.length;
 
-                ctx->cicmBlock = (uint8_t*)malloc(ctx->cicmBlockHeader.length);
+                ctx->cicmBlock = (uint8_t *)malloc(ctx->cicmBlockHeader.length);
 
                 if(ctx->cicmBlock == NULL)
                 {
@@ -1102,12 +1061,11 @@ void* aaruf_open(const char* filepath)
                 if(ctx->dumpHardwareHeader.identifier != DumpHardwareBlock)
                 {
                     memset(&ctx->dumpHardwareHeader, 0, sizeof(DumpHardwareHeader));
-                    fprintf(stderr,
-                            "libaaruformat: Incorrect identifier for data block at position %" PRIu64 "\n",
+                    fprintf(stderr, "libaaruformat: Incorrect identifier for data block at position %" PRIu64 "\n",
                             idxEntries[i].offset);
                 }
 
-                data = (uint8_t*)malloc(ctx->dumpHardwareHeader.length);
+                data = (uint8_t *)malloc(ctx->dumpHardwareHeader.length);
 
                 if(data == NULL)
                 {
@@ -1132,8 +1090,7 @@ void* aaruf_open(const char* filepath)
                         fprintf(stderr,
                                 "libaaruformat: Incorrect CRC found: 0x%" PRIx64 " found, expected 0x%" PRIx64
                                 ", continuing...\n",
-                                crc64,
-                                ctx->dumpHardwareHeader.crc64);
+                                crc64, ctx->dumpHardwareHeader.crc64);
                         break;
                     }
                 }
@@ -1141,7 +1098,7 @@ void* aaruf_open(const char* filepath)
                 free(data);
                 fseek(ctx->imageStream, -(long)readBytes, SEEK_CUR);
 
-                ctx->dumpHardwareEntriesWithData = (DumpHardwareEntriesWithData*)malloc(
+                ctx->dumpHardwareEntriesWithData = (DumpHardwareEntriesWithData *)malloc(
                     sizeof(DumpHardwareEntriesWithData) * ctx->dumpHardwareHeader.entries);
 
                 if(ctx->dumpHardwareEntriesWithData == NULL)
@@ -1152,14 +1109,13 @@ void* aaruf_open(const char* filepath)
                     break;
                 }
 
-                memset(ctx->dumpHardwareEntriesWithData,
-                       0,
+                memset(ctx->dumpHardwareEntriesWithData, 0,
                        sizeof(DumpHardwareEntriesWithData) * ctx->dumpHardwareHeader.entries);
 
                 for(e = 0; e < ctx->dumpHardwareHeader.entries; e++)
                 {
-                    readBytes = fread(
-                        &ctx->dumpHardwareEntriesWithData[e].entry, 1, sizeof(DumpHardwareEntry), ctx->imageStream);
+                    readBytes = fread(&ctx->dumpHardwareEntriesWithData[e].entry, 1, sizeof(DumpHardwareEntry),
+                                      ctx->imageStream);
 
                     if(readBytes != sizeof(DumpHardwareEntry))
                     {
@@ -1171,24 +1127,22 @@ void* aaruf_open(const char* filepath)
                     if(ctx->dumpHardwareEntriesWithData[e].entry.manufacturerLength > 0)
                     {
                         ctx->dumpHardwareEntriesWithData[e].manufacturer =
-                            (uint8_t*)malloc(ctx->dumpHardwareEntriesWithData[e].entry.manufacturerLength + 1);
+                            (uint8_t *)malloc(ctx->dumpHardwareEntriesWithData[e].entry.manufacturerLength + 1);
 
                         if(ctx->dumpHardwareEntriesWithData[e].manufacturer != NULL)
                         {
                             ctx->dumpHardwareEntriesWithData[e]
                                 .manufacturer[ctx->dumpHardwareEntriesWithData[e].entry.manufacturerLength] = 0;
-                            readBytes = fread(ctx->dumpHardwareEntriesWithData[e].manufacturer,
-                                              1,
-                                              ctx->dumpHardwareEntriesWithData[e].entry.manufacturerLength,
-                                              ctx->imageStream);
+                            readBytes =
+                                fread(ctx->dumpHardwareEntriesWithData[e].manufacturer, 1,
+                                      ctx->dumpHardwareEntriesWithData[e].entry.manufacturerLength, ctx->imageStream);
 
                             if(readBytes != ctx->dumpHardwareEntriesWithData[e].entry.manufacturerLength)
                             {
                                 free(ctx->dumpHardwareEntriesWithData[e].manufacturer);
                                 ctx->dumpHardwareEntriesWithData[e].entry.manufacturerLength = 0;
-                                fprintf(stderr,
-                                        "libaaruformat: Could not read dump hardware block entry manufacturer, "
-                                        "continuing...\n");
+                                fprintf(stderr, "libaaruformat: Could not read dump hardware block entry manufacturer, "
+                                                "continuing...\n");
                             }
                         }
                     }
@@ -1196,16 +1150,14 @@ void* aaruf_open(const char* filepath)
                     if(ctx->dumpHardwareEntriesWithData[e].entry.modelLength > 0)
                     {
                         ctx->dumpHardwareEntriesWithData[e].model =
-                            (uint8_t*)malloc(ctx->dumpHardwareEntriesWithData[e].entry.modelLength + 1);
+                            (uint8_t *)malloc(ctx->dumpHardwareEntriesWithData[e].entry.modelLength + 1);
 
                         if(ctx->dumpHardwareEntriesWithData[e].model != NULL)
                         {
                             ctx->dumpHardwareEntriesWithData[e]
                                 .model[ctx->dumpHardwareEntriesWithData[e].entry.modelLength] = 0;
-                            readBytes = fread(ctx->dumpHardwareEntriesWithData[e].model,
-                                              1,
-                                              ctx->dumpHardwareEntriesWithData[e].entry.modelLength,
-                                              ctx->imageStream);
+                            readBytes = fread(ctx->dumpHardwareEntriesWithData[e].model, 1,
+                                              ctx->dumpHardwareEntriesWithData[e].entry.modelLength, ctx->imageStream);
 
                             if(readBytes != ctx->dumpHardwareEntriesWithData[e].entry.modelLength)
                             {
@@ -1221,24 +1173,22 @@ void* aaruf_open(const char* filepath)
                     if(ctx->dumpHardwareEntriesWithData[e].entry.revisionLength > 0)
                     {
                         ctx->dumpHardwareEntriesWithData[e].revision =
-                            (uint8_t*)malloc(ctx->dumpHardwareEntriesWithData[e].entry.revisionLength + 1);
+                            (uint8_t *)malloc(ctx->dumpHardwareEntriesWithData[e].entry.revisionLength + 1);
 
                         if(ctx->dumpHardwareEntriesWithData[e].revision != NULL)
                         {
                             ctx->dumpHardwareEntriesWithData[e]
                                 .revision[ctx->dumpHardwareEntriesWithData[e].entry.revisionLength] = 0;
-                            readBytes = fread(ctx->dumpHardwareEntriesWithData[e].revision,
-                                              1,
-                                              ctx->dumpHardwareEntriesWithData[e].entry.revisionLength,
-                                              ctx->imageStream);
+                            readBytes =
+                                fread(ctx->dumpHardwareEntriesWithData[e].revision, 1,
+                                      ctx->dumpHardwareEntriesWithData[e].entry.revisionLength, ctx->imageStream);
 
                             if(readBytes != ctx->dumpHardwareEntriesWithData[e].entry.revisionLength)
                             {
                                 free(ctx->dumpHardwareEntriesWithData[e].revision);
                                 ctx->dumpHardwareEntriesWithData[e].entry.revisionLength = 0;
-                                fprintf(stderr,
-                                        "libaaruformat: Could not read dump hardware block entry revision, "
-                                        "continuing...\n");
+                                fprintf(stderr, "libaaruformat: Could not read dump hardware block entry revision, "
+                                                "continuing...\n");
                             }
                         }
                     }
@@ -1246,24 +1196,22 @@ void* aaruf_open(const char* filepath)
                     if(ctx->dumpHardwareEntriesWithData[e].entry.firmwareLength > 0)
                     {
                         ctx->dumpHardwareEntriesWithData[e].firmware =
-                            (uint8_t*)malloc(ctx->dumpHardwareEntriesWithData[e].entry.firmwareLength + 1);
+                            (uint8_t *)malloc(ctx->dumpHardwareEntriesWithData[e].entry.firmwareLength + 1);
 
                         if(ctx->dumpHardwareEntriesWithData[e].firmware != NULL)
                         {
                             ctx->dumpHardwareEntriesWithData[e]
                                 .firmware[ctx->dumpHardwareEntriesWithData[e].entry.firmwareLength] = 0;
-                            readBytes = fread(ctx->dumpHardwareEntriesWithData[e].firmware,
-                                              1,
-                                              ctx->dumpHardwareEntriesWithData[e].entry.firmwareLength,
-                                              ctx->imageStream);
+                            readBytes =
+                                fread(ctx->dumpHardwareEntriesWithData[e].firmware, 1,
+                                      ctx->dumpHardwareEntriesWithData[e].entry.firmwareLength, ctx->imageStream);
 
                             if(readBytes != ctx->dumpHardwareEntriesWithData[e].entry.firmwareLength)
                             {
                                 free(ctx->dumpHardwareEntriesWithData[e].firmware);
                                 ctx->dumpHardwareEntriesWithData[e].entry.firmwareLength = 0;
-                                fprintf(stderr,
-                                        "libaaruformat: Could not read dump hardware block entry firmware, "
-                                        "continuing...\n");
+                                fprintf(stderr, "libaaruformat: Could not read dump hardware block entry firmware, "
+                                                "continuing...\n");
                             }
                         }
                     }
@@ -1271,16 +1219,14 @@ void* aaruf_open(const char* filepath)
                     if(ctx->dumpHardwareEntriesWithData[e].entry.serialLength > 0)
                     {
                         ctx->dumpHardwareEntriesWithData[e].serial =
-                            (uint8_t*)malloc(ctx->dumpHardwareEntriesWithData[e].entry.serialLength + 1);
+                            (uint8_t *)malloc(ctx->dumpHardwareEntriesWithData[e].entry.serialLength + 1);
 
                         if(ctx->dumpHardwareEntriesWithData[e].serial != NULL)
                         {
                             ctx->dumpHardwareEntriesWithData[e]
                                 .serial[ctx->dumpHardwareEntriesWithData[e].entry.serialLength] = 0;
-                            readBytes = fread(ctx->dumpHardwareEntriesWithData[e].serial,
-                                              1,
-                                              ctx->dumpHardwareEntriesWithData[e].entry.serialLength,
-                                              ctx->imageStream);
+                            readBytes = fread(ctx->dumpHardwareEntriesWithData[e].serial, 1,
+                                              ctx->dumpHardwareEntriesWithData[e].entry.serialLength, ctx->imageStream);
 
                             if(readBytes != ctx->dumpHardwareEntriesWithData[e].entry.serialLength)
                             {
@@ -1296,16 +1242,15 @@ void* aaruf_open(const char* filepath)
                     if(ctx->dumpHardwareEntriesWithData[e].entry.softwareNameLength > 0)
                     {
                         ctx->dumpHardwareEntriesWithData[e].softwareName =
-                            (uint8_t*)malloc(ctx->dumpHardwareEntriesWithData[e].entry.softwareNameLength + 1);
+                            (uint8_t *)malloc(ctx->dumpHardwareEntriesWithData[e].entry.softwareNameLength + 1);
 
                         if(ctx->dumpHardwareEntriesWithData[e].softwareName != NULL)
                         {
                             ctx->dumpHardwareEntriesWithData[e]
                                 .softwareName[ctx->dumpHardwareEntriesWithData[e].entry.softwareNameLength] = 0;
-                            readBytes = fread(ctx->dumpHardwareEntriesWithData[e].softwareName,
-                                              1,
-                                              ctx->dumpHardwareEntriesWithData[e].entry.softwareNameLength,
-                                              ctx->imageStream);
+                            readBytes =
+                                fread(ctx->dumpHardwareEntriesWithData[e].softwareName, 1,
+                                      ctx->dumpHardwareEntriesWithData[e].entry.softwareNameLength, ctx->imageStream);
 
                             if(readBytes != ctx->dumpHardwareEntriesWithData[e].entry.softwareNameLength)
                             {
@@ -1321,14 +1266,13 @@ void* aaruf_open(const char* filepath)
                     if(ctx->dumpHardwareEntriesWithData[e].entry.softwareVersionLength > 0)
                     {
                         ctx->dumpHardwareEntriesWithData[e].softwareVersion =
-                            (uint8_t*)malloc(ctx->dumpHardwareEntriesWithData[e].entry.softwareVersionLength + 1);
+                            (uint8_t *)malloc(ctx->dumpHardwareEntriesWithData[e].entry.softwareVersionLength + 1);
 
                         if(ctx->dumpHardwareEntriesWithData[e].softwareVersion != NULL)
                         {
                             ctx->dumpHardwareEntriesWithData[e]
                                 .softwareVersion[ctx->dumpHardwareEntriesWithData[e].entry.softwareVersionLength] = 0;
-                            readBytes = fread(ctx->dumpHardwareEntriesWithData[e].softwareVersion,
-                                              1,
+                            readBytes = fread(ctx->dumpHardwareEntriesWithData[e].softwareVersion, 1,
                                               ctx->dumpHardwareEntriesWithData[e].entry.softwareVersionLength,
                                               ctx->imageStream);
 
@@ -1345,15 +1289,14 @@ void* aaruf_open(const char* filepath)
 
                     if(ctx->dumpHardwareEntriesWithData[e].entry.softwareOperatingSystemLength > 0)
                     {
-                        ctx->dumpHardwareEntriesWithData[e].softwareOperatingSystem = (uint8_t*)malloc(
+                        ctx->dumpHardwareEntriesWithData[e].softwareOperatingSystem = (uint8_t *)malloc(
                             ctx->dumpHardwareEntriesWithData[e].entry.softwareOperatingSystemLength + 1);
 
                         if(ctx->dumpHardwareEntriesWithData[e].softwareOperatingSystem != NULL)
                         {
                             ctx->dumpHardwareEntriesWithData[e].softwareOperatingSystem
                                 [ctx->dumpHardwareEntriesWithData[e].entry.softwareOperatingSystemLength] = 0;
-                            readBytes = fread(ctx->dumpHardwareEntriesWithData[e].softwareOperatingSystem,
-                                              1,
+                            readBytes = fread(ctx->dumpHardwareEntriesWithData[e].softwareOperatingSystem, 1,
                                               ctx->dumpHardwareEntriesWithData[e].entry.softwareOperatingSystemLength,
                                               ctx->imageStream);
 
@@ -1361,28 +1304,24 @@ void* aaruf_open(const char* filepath)
                             {
                                 free(ctx->dumpHardwareEntriesWithData[e].softwareOperatingSystem);
                                 ctx->dumpHardwareEntriesWithData[e].entry.softwareOperatingSystemLength = 0;
-                                fprintf(stderr,
-                                        "libaaruformat: Could not read dump hardware block entry manufacturer, "
-                                        "continuing...\n");
+                                fprintf(stderr, "libaaruformat: Could not read dump hardware block entry manufacturer, "
+                                                "continuing...\n");
                             }
                         }
                     }
 
                     ctx->dumpHardwareEntriesWithData[e].extents =
-                        (DumpExtent*)malloc(sizeof(DumpExtent) * ctx->dumpHardwareEntriesWithData->entry.extents);
+                        (DumpExtent *)malloc(sizeof(DumpExtent) * ctx->dumpHardwareEntriesWithData->entry.extents);
 
                     if(ctx->dumpHardwareEntriesWithData[e].extents == NULL)
                     {
-                        fprintf(stderr,
-                                "libaaruformat: Could not allocate memory for dump hardware block extents, "
-                                "continuing...\n");
+                        fprintf(stderr, "libaaruformat: Could not allocate memory for dump hardware block extents, "
+                                        "continuing...\n");
                         continue;
                     }
 
-                    readBytes = fread(ctx->dumpHardwareEntriesWithData[e].extents,
-                                      sizeof(DumpExtent),
-                                      ctx->dumpHardwareEntriesWithData[e].entry.extents,
-                                      ctx->imageStream);
+                    readBytes = fread(ctx->dumpHardwareEntriesWithData[e].extents, sizeof(DumpExtent),
+                                      ctx->dumpHardwareEntriesWithData[e].entry.extents, ctx->imageStream);
 
                     if(readBytes != ctx->dumpHardwareEntriesWithData->entry.extents)
                     {
@@ -1408,12 +1347,11 @@ void* aaruf_open(const char* filepath)
                 if(checksum_header.identifier != ChecksumBlock)
                 {
                     memset(&checksum_header, 0, sizeof(ChecksumHeader));
-                    fprintf(stderr,
-                            "libaaruformat: Incorrect identifier for checksum block at position %" PRIu64 "\n",
+                    fprintf(stderr, "libaaruformat: Incorrect identifier for checksum block at position %" PRIu64 "\n",
                             idxEntries[i].offset);
                 }
 
-                data = (uint8_t*)malloc(checksum_header.length);
+                data = (uint8_t *)malloc(checksum_header.length);
 
                 if(data == NULL)
                 {
@@ -1435,7 +1373,7 @@ void* aaruf_open(const char* filepath)
                 pos = 0;
                 for(j = 0; j < checksum_header.entries; j++)
                 {
-                    checksum_entry = (ChecksumEntry*)(&data[pos]);
+                    checksum_entry = (ChecksumEntry *)(&data[pos]);
                     pos += sizeof(ChecksumEntry);
 
                     if(checksum_entry->type == Md5)
@@ -1476,9 +1414,7 @@ void* aaruf_open(const char* filepath)
             default:
                 fprintf(stderr,
                         "libaaruformat: Unhandled block type %4.4s with data type %d is indexed to be at %" PRIu64 "\n",
-                        (char*)&idxEntries[i].blockType,
-                        idxEntries[i].dataType,
-                        idxEntries[i].offset);
+                        (char *)&idxEntries[i].blockType, idxEntries[i].dataType, idxEntries[i].offset);
                 break;
         }
     }
@@ -1512,7 +1448,7 @@ void* aaruf_open(const char* filepath)
     // TODO: Cache tracks and sessions?
 
     // Initialize ECC for Compact Disc
-    ctx->eccCdContext = (CdEccContext*)aaruf_ecc_cd_init();
+    ctx->eccCdContext = (CdEccContext *)aaruf_ecc_cd_init();
 
     ctx->magic               = AARU_MAGIC;
     ctx->libraryMajorVersion = LIBAARUFORMAT_MAJOR_VERSION;

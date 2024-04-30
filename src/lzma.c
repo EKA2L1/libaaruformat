@@ -23,30 +23,17 @@
 
 #include "../3rdparty/lzma-21.03beta/C/LzmaLib.h"
 
-AARU_EXPORT int32_t AARU_CALL aaruf_lzma_decode_buffer(uint8_t*       dst_buffer,
-                                                       size_t*        dst_size,
-                                                       const uint8_t* src_buffer,
-                                                       size_t*        srcLen,
-                                                       const uint8_t* props,
-                                                       size_t         propsSize)
+AARU_EXPORT int32_t AARU_CALL aaruf_lzma_decode_buffer(uint8_t *dst_buffer, size_t *dst_size, const uint8_t *src_buffer,
+                                                       size_t *srcLen, const uint8_t *props, size_t propsSize)
 {
     return LzmaUncompress(dst_buffer, dst_size, src_buffer, srcLen, props, propsSize);
 }
 
-AARU_EXPORT int32_t AARU_CALL aaruf_lzma_encode_buffer(uint8_t*       dst_buffer,
-                                                       size_t*        dst_size,
-                                                       const uint8_t* src_buffer,
-                                                       size_t         srcLen,
-                                                       uint8_t*       outProps,
-                                                       size_t*        outPropsSize,
-                                                       int32_t        level,
-                                                       uint32_t       dictSize,
-                                                       int32_t        lc,
-                                                       int32_t        lp,
-                                                       int32_t        pb,
-                                                       int32_t        fb,
-                                                       int32_t        numThreads)
+AARU_EXPORT int32_t AARU_CALL aaruf_lzma_encode_buffer(uint8_t *dst_buffer, size_t *dst_size, const uint8_t *src_buffer,
+                                                       size_t srcLen, uint8_t *outProps, size_t *outPropsSize,
+                                                       int32_t level, uint32_t dictSize, int32_t lc, int32_t lp,
+                                                       int32_t pb, int32_t fb, int32_t numThreads)
 {
-    return LzmaCompress(
-        dst_buffer, dst_size, src_buffer, srcLen, outProps, outPropsSize, level, dictSize, lc, lp, pb, fb, numThreads);
+    return LzmaCompress(dst_buffer, dst_size, src_buffer, srcLen, outProps, outPropsSize, level, dictSize, lc, lp, pb,
+                        fb, numThreads);
 }

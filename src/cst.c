@@ -22,7 +22,7 @@
 
 #include <aaruformat.h>
 
-int32_t aaruf_cst_transform(const uint8_t* interleaved, uint8_t* sequential, size_t length)
+int32_t aaruf_cst_transform(const uint8_t *interleaved, uint8_t *sequential, size_t length)
 {
     uint8_t *p, *q, *r, *s, *t, *u, *v, *w;
     size_t   qStart;
@@ -156,7 +156,7 @@ int32_t aaruf_cst_transform(const uint8_t* interleaved, uint8_t* sequential, siz
     return AARUF_STATUS_OK;
 }
 
-int32_t aaruf_cst_untransform(const uint8_t* sequential, uint8_t* interleaved, size_t length)
+int32_t aaruf_cst_untransform(const uint8_t *sequential, uint8_t *interleaved, size_t length)
 {
     uint8_t *p, *q, *r, *s, *t, *u, *v, *w;
     size_t   qStart;

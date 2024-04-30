@@ -28,9 +28,9 @@
  * @return If positive, confidence value, with 100 being maximum confidentiality, and 0 not recognizing the file.
  * If negative, error value
  */
-int aaruf_identify(const char* filename)
+int aaruf_identify(const char *filename)
 {
-    FILE* stream;
+    FILE *stream;
 
     stream = fopen(filename, "rb");
 
@@ -50,7 +50,7 @@ int aaruf_identify(const char* filename)
  * @return If positive, confidence value, with 100 being maximum confidentiality, and 0 not recognizing the file.
  * If negative, error value
  */
-int aaruf_identify_stream(FILE* imageStream)
+int aaruf_identify_stream(FILE *imageStream)
 {
     fseek(imageStream, 0, SEEK_SET);
 

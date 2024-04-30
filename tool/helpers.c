@@ -22,9 +22,9 @@
 
 #include "aaruformattool.h"
 
-char* byte_array_to_hex_string(const unsigned char* array, int array_size)
+char *byte_array_to_hex_string(const unsigned char *array, int array_size)
 {
-    char* hex_string = NULL;
+    char *hex_string = NULL;
     int   j;
     int   i;
 

@@ -23,9 +23,9 @@
 
 #include "aaruformattool.h"
 
-int verify(char* path)
+int verify(char *path)
 {
-    aaruformatContext* ctx;
+    aaruformatContext *ctx;
     uint32_t           res;
 
     ctx = aaruf_open(path);
@@ -38,7 +38,8 @@ int verify(char* path)
 
     res = aaruf_verify_image(ctx);
 
-    if(res == AARUF_STATUS_OK) printf("Image blocks contain no errors.\n");
+    if(res == AARUF_STATUS_OK)
+        printf("Image blocks contain no errors.\n");
     else if(res == AARUF_ERROR_INVALID_BLOCK_CRC)
         printf("A block contains an invalid CRC value.\n");
     else
@@ -47,14 +48,14 @@ int verify(char* path)
     return res;
 }
 
-int verify_sectors(char* path)
+int verify_sectors(char *path)
 {
-    aaruformatContext* ctx;
+    aaruformatContext *ctx;
     uint64_t           s;
-    uint8_t*           buffer;
+    uint8_t           *buffer;
     uint32_t           buffer_len = 2352;
     int32_t            res;
-    CdEccContext*      cd_ecc_context;
+    CdEccContext      *cd_ecc_context;
     ctx = aaruf_open(path);
     bool     verify_result;
     bool     unknown, has_edc, edc_correct, has_ecc_p, ecc_p_correct, has_ecc_q, ecc_q_correct;
@@ -89,15 +90,8 @@ int verify_sectors(char* path)
             continue;
         }
 
-        verify_result = check_cd_sector_channel(cd_ecc_context,
-                                                buffer,
-                                                &unknown,
-                                                &has_edc,
-                                                &edc_correct,
-                                                &has_ecc_p,
-                                                &ecc_p_correct,
-                                                &has_ecc_q,
-                                                &ecc_q_correct);
+        verify_result = check_cd_sector_channel(cd_ecc_context, buffer, &unknown, &has_edc, &edc_correct, &has_ecc_p,
+                                                &ecc_p_correct, &has_ecc_q, &ecc_q_correct);
 
         if(verify_result) continue;
 
@@ -118,7 +112,8 @@ int verify_sectors(char* path)
         any_error = true;
     }
 
-    if(any_error) printf("\rSome sectors had incorrect checksums.\n");
+    if(any_error)
+        printf("\rSome sectors had incorrect checksums.\n");
     else
         printf("\rAll sector checksums are correct.\n");
 

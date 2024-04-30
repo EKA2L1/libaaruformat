@@ -23,9 +23,9 @@ extern "C"
 {
 #endif
 
-    uint32_t crc32_data(const uint8_t* data, uint32_t len);
+    uint32_t crc32_data(const uint8_t *data, uint32_t len);
 #ifdef __cplusplus
 }
 #endif
 
-#endif // LIBAARUFORMAT_TESTS_CRC32_H_
+#endif  // LIBAARUFORMAT_TESTS_CRC32_H_

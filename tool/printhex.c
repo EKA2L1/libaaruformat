@@ -22,7 +22,7 @@
 #include <stdio.h>
 #include <string.h>
 
-int printhex(unsigned char* array, unsigned int length, int width, bool color)
+int printhex(unsigned char *array, unsigned int length, int width, bool color)
 {
     char          length_hex[17];
     char          str[256];

@@ -1,4 +1,5 @@
 # libaaruformat
+
 C implementation of [Aaru](https://www.github.com/aaru-dps/Aaru) file format.
 
 Work in progress, don't expect it to work yet.
@@ -9,6 +10,7 @@ This means any hash or compression algorithm must be statically linked inside th
 cmake is not a hard dependency, it's merely for the ease of using IDEs (specifically CLion).
 
 Things still to be implemented that are already in the C# version:
+
 - Tape file blocks
 - Automatic media type generation from C# enumeration
 - Nuget package for linking with Aaru
@@ -17,6 +19,7 @@ Things still to be implemented that are already in the C# version:
 - Deduplication (requires SHA256)
 
 Things to be implemented not in the C# version:
+
 - Compile for Dreamcast (KallistiOS preferibly)
 - Compile for PlayStation Portable
 - Compile for Wii

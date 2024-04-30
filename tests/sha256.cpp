@@ -18,13 +18,13 @@
 
 #ifdef AARU_HAS_SHA256
 
+#include <openssl/sha.h>
 #include <climits>
 #include <cstdint>
-#include <openssl/sha.h>
 
 #include "gtest/gtest.h"
 
-static const uint8_t* buffer;
+static const uint8_t *buffer;
 
 unsigned char expected_sha256[SHA256_DIGEST_LENGTH] = {0x4d, 0x1a, 0x6b, 0x8a, 0x54, 0x67, 0x00, 0xc4, 0x8e, 0xda, 0x70,
                                                        0xd3, 0x39, 0x1c, 0x8f, 0x15, 0x8a, 0x8d, 0x12, 0xb2, 0x38, 0x92,
@@ -32,14 +32,14 @@ unsigned char expected_sha256[SHA256_DIGEST_LENGTH] = {0x4d, 0x1a, 0x6b, 0x8a, 0
 
 class sha256Fixture : public ::testing::Test
 {
-  public:
+public:
     sha256Fixture()
     {
         // initialization;
         // can also be done in SetUp()
     }
 
-  protected:
+protected:
     void SetUp()
     {
         char path[PATH_MAX];
@@ -48,13 +48,13 @@ class sha256Fixture : public ::testing::Test
         getcwd(path, PATH_MAX);
         snprintf(filename, PATH_MAX, "%s/data/random", path);
 
-        FILE* file = fopen(filename, "rb");
-        buffer     = (const uint8_t*)malloc(1048576);
-        fread((void*)buffer, 1, 1048576, file);
+        FILE *file = fopen(filename, "rb");
+        buffer     = (const uint8_t *)malloc(1048576);
+        fread((void *)buffer, 1, 1048576, file);
         fclose(file);
     }
 
-    void TearDown() { free((void*)buffer); }
+    void TearDown() { free((void *)buffer); }
 
     ~sha256Fixture()
     {
@@ -64,20 +64,20 @@ class sha256Fixture : public ::testing::Test
     // shared user data
 };
 
-#define EXPECT_ARRAY_EQ(reference, actual, element_count)                                                              \
-    {                                                                                                                  \
-        unsigned char* reference_ = static_cast<unsigned char*>(reference);                                            \
-        unsigned char* actual_    = static_cast<unsigned char*>(actual);                                               \
-        for(int cmp_i = 0; cmp_i < (element_count); cmp_i++) { EXPECT_EQ(reference_[cmp_i], actual_[cmp_i]); }         \
+#define EXPECT_ARRAY_EQ(reference, actual, element_count)                                                      \
+    {                                                                                                          \
+        unsigned char *reference_ = static_cast<unsigned char *>(reference);                                   \
+        unsigned char *actual_    = static_cast<unsigned char *>(actual);                                      \
+        for(int cmp_i = 0; cmp_i < (element_count); cmp_i++) { EXPECT_EQ(reference_[cmp_i], actual_[cmp_i]); } \
     }
 
 TEST_F(sha256Fixture, sha256)
 {
-    SHA256_CTX*   ctx;
+    SHA256_CTX   *ctx;
     unsigned char hash[SHA256_DIGEST_LENGTH];
     int           ret;
 
-    ctx = static_cast<SHA256_CTX*>(malloc(sizeof(SHA256_CTX)));
+    ctx = static_cast<SHA256_CTX *>(malloc(sizeof(SHA256_CTX)));
 
     EXPECT_NE(nullptr, ctx);
 

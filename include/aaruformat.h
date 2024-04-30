@@ -34,4 +34,4 @@
 #include "aaruformat/spamsum.h"
 #include "aaruformat/structs.h"
 
-#endif // LIBAARUFORMAT_AARUFORMAT_H
+#endif  // LIBAARUFORMAT_AARUFORMAT_H

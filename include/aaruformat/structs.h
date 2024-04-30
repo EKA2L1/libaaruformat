@@ -18,7 +18,7 @@
 
 #ifndef _MSC_VER
 #pragma clang diagnostic push
-#pragma ide diagnostic   ignored "OCUnusedGlobalDeclarationInspection"
+#pragma ide diagnostic ignored "OCUnusedGlobalDeclarationInspection"
 #endif
 
 #ifndef LIBAARUFORMAT_STRUCTS_H
@@ -38,23 +38,23 @@ typedef struct AaruHeader
     /**Header identifier, <see cref="AARU_MAGIC" /> */
     uint64_t identifier;
     /**UTF-16LE name of the application that created the image */
-    uint8_t application[64];
+    uint8_t  application[64];
     /**Image format major version. A new major version means a possibly incompatible change of format */
-    uint8_t imageMajorVersion;
+    uint8_t  imageMajorVersion;
     /**Image format minor version. A new minor version indicates a compatible change of format */
-    uint8_t imageMinorVersion;
+    uint8_t  imageMinorVersion;
     /**Major version of the application that created the image */
-    uint8_t applicationMajorVersion;
+    uint8_t  applicationMajorVersion;
     /**Minor version of the application that created the image */
-    uint8_t applicationMinorVersion;
+    uint8_t  applicationMinorVersion;
     /**Type of media contained on image */
     uint32_t mediaType;
     /**Offset to index */
     uint64_t indexOffset;
     /**Windows filetime (100 nanoseconds since 1601/01/01 00:00:00 UTC) of image creation time */
-    int64_t creationTime;
+    int64_t  creationTime;
     /**Windows filetime (100 nanoseconds since 1601/01/01 00:00:00 UTC) of image last written time */
-    int64_t lastWrittenTime;
+    int64_t  lastWrittenTime;
 } AaruHeader;
 
 /**Header for a deduplication table. Table follows it */
@@ -67,7 +67,7 @@ typedef struct DdtHeader
     /**Compression algorithm used to compress the DDT */
     uint16_t compression;
     /**Each entry is ((uint8_t offset in file) &lt;&lt; shift) + (sector offset in block) */
-    uint8_t shift;
+    uint8_t  shift;
     /**How many entries are in the table */
     uint64_t entries;
     /**Compressed length for the DDT */
@@ -141,9 +141,9 @@ typedef struct MetadataBlockHeader
     /**Size in uint8_ts of this whole metadata block */
     uint32_t blockSize;
     /**Sequence of media set this media beint64_ts to */
-    int32_t mediaSequence;
+    int32_t  mediaSequence;
     /**Total number of media on the media set this media beint64_ts to */
-    int32_t lastMediaSequence;
+    int32_t  lastMediaSequence;
     /**Offset to start of creator string from start of this block */
     uint32_t creatorOffset;
     /**Length in uint8_ts of the null-terminated UTF-16LE creator string */
@@ -281,14 +281,14 @@ typedef struct ChecksumHeader
     /**Length in uint8_ts of the block */
     uint32_t length;
     /**How many checksums follow */
-    uint8_t entries;
+    uint8_t  entries;
 } ChecksumHeader;
 
 /**Checksum entry, followed by checksum data itself */
 typedef struct ChecksumEntry
 {
     /**Checksum algorithm */
-    uint8_t type;
+    uint8_t  type;
     /**Length in uint8_ts of checksum that follows this structure */
     uint32_t length;
 } ChecksumEntry;
@@ -303,14 +303,14 @@ typedef struct Crc64Context
 typedef struct CdEccContext
 {
     bool      initedEdc;
-    uint8_t*  eccBTable;
-    uint8_t*  eccFTable;
-    uint32_t* edcTable;
+    uint8_t  *eccBTable;
+    uint8_t  *eccFTable;
+    uint32_t *edcTable;
 } CdEccContext;
 
 #pragma pack(pop)
 
-#endif // LIBAARUFORMAT_STRUCTS_H
+#endif  // LIBAARUFORMAT_STRUCTS_H
 
 #ifndef _MSC_VER
 #pragma clang diagnostic pop
