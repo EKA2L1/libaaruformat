@@ -148,6 +148,8 @@ AARU_EXPORT int32_t AARU_CALL aaruf_lzma_encode_buffer(uint8_t *dst_buffer, size
                                                        int32_t level, uint32_t dictSize, int32_t lc, int32_t lp,
                                                        int32_t pb, int32_t fb, int32_t numThreads);
 
+AARU_EXPORT void aaruf_get_image_info(void *context, ImageInfo *imageInfo);
+
 #if defined(__x86_64__) || defined(__amd64) || defined(_M_AMD64) || defined(_M_X64) || defined(__I386__) || \
     defined(__i386__) || defined(__THW_INTEL) || defined(_M_IX86)
 

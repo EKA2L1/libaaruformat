@@ -1460,3 +1460,12 @@ void *aaruf_open_from_handle(FILE *imageStream)
 
     return ctx;
 }
+
+AARU_EXPORT void aaruf_get_image_info(void *context, ImageInfo *imageInfo) {
+    if (!context || !imageInfo) {
+        return;
+    }
+
+    aaruformatContext *contextCasted = context;
+    *imageInfo = contextCasted->imageInfo;
+}
