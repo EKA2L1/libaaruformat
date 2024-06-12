@@ -62,6 +62,8 @@ AARU_EXPORT int AARU_CALL aaruf_identify_stream(FILE *imageStream);
 
 AARU_EXPORT void *AARU_CALL aaruf_open(const char *filepath);
 
+AARU_EXPORT void *AARU_CALL aaruf_open_from_handle(FILE *imageStream);
+
 AARU_EXPORT int AARU_CALL aaruf_close(void *context);
 
 AARU_EXPORT int32_t AARU_CALL aaruf_read_media_tag(void *context, uint8_t *data, int32_t tag, uint32_t *length);

@@ -24,6 +24,10 @@ ENDIF (APPLE)
 
 project(libaaruformat C)
 
+option(AARU_BUILD_TESTS "Build tests for Aaru" ON)
+option(AARU_BUILD_TOOLS "Build AAru tools" ON)
+option(AARU_BUILD_SHARED "Build shared library" OFF)
+
 add_compile_definitions(__STDC_FORMAT_MACROS=1)
 
 if ("${CMAKE_C_COMPILER_ID}" MATCHES "MSVC" AND "${CMAKE_C_COMPILER_ARCHITECTURE_ID}" MATCHES "ARMV7")
@@ -93,14 +97,22 @@ if ("${CMAKE_BUILD_TYPE}" MATCHES "Release")
   endif ()
 endif ()
 
-add_library(aaruformat SHARED include/aaruformat/consts.h include/aaruformat/enums.h include/aaru.h include/aaruformat.h
+set(AARU_FORMAT_SOURCES
+        include/aaruformat/consts.h include/aaruformat/enums.h include/aaru.h include/aaruformat.h
         include/aaruformat/decls.h include/aaruformat/structs.h src/identify.c src/open.c include/aaruformat/context.h
         src/close.c include/aaruformat/errors.h src/read.c include/aaruformat/crc64.h src/cst.c src/ecc_cd.c src/helpers.c
         src/simd.c include/aaruformat/simd.h src/crc64/crc64.c src/crc64/crc64_clmul.c src/crc64/crc64_vmull.c
         src/crc64/arm_vmull.c src/crc64/arm_vmull.h src/spamsum.c include/aaruformat/spamsum.h include/aaruformat/flac.h
         src/flac.c src/lzma.c src/lru.c include/aaruformat/lru.h include/aaruformat/endian.h src/verify.c)
 
+if (AARU_BUILD_SHARED)
+  add_library(aaruformat SHARED ${AARU_FORMAT_SOURCES})
+else()
+  add_library(aaruformat STATIC ${AARU_FORMAT_SOURCES})
+endif()
+
 include_directories(include include/aaruformat)
+target_include_directories(aaruformat PUBLIC include include/aaruformat 3rdparty/uthash/src)
 
 include(3rdparty/flac.cmake)
 include(3rdparty/lzma.cmake)
@@ -155,8 +167,6 @@ elseif (OpenSSL_FOUND)
   TARGET_LINK_LIBRARIES_WHOLE_ARCHIVE(aaruformat ${OPENSSL_CRYPTO_LIBRARY})
 endif ()
 
-include_directories(include 3rdparty/uthash/src)
-
 include(CheckLibraryExists)
 
 check_library_exists(m log "" HAVE_LIB_M)
@@ -164,5 +174,10 @@ if (HAVE_LIB_M)
   TARGET_LINK_LIBRARIES_WHOLE_ARCHIVE(aaruformat m)
 endif ()
 
-add_subdirectory(tests)
-add_subdirectory(tool)
+if (AARU_BUILD_TESTS)
+  add_subdirectory(tests)
+endif()
+
+if (AARU_BUILD_TOOLS)
+  add_subdirectory(tools)
+endif()

@@ -28,7 +28,11 @@
 
 #include <aaruformat.h>
 
-void *aaruf_open(const char *filepath)
+void *AARU_CALL aaruf_open(const char *filepath) {
+    aaruf_open_from_handle(fopen(filepath, "rb"));
+}
+
+void *aaruf_open_from_handle(FILE *imageStream)
 {
     aaruformatContext *ctx;
     int                errorNo;
@@ -59,7 +63,7 @@ void *aaruf_open(const char *filepath)
         return NULL;
     }
 
-    ctx->imageStream = fopen(filepath, "rb");
+    ctx->imageStream = imageStream;
 
     if(ctx->imageStream == NULL)
     {
