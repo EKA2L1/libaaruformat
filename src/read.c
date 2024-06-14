@@ -120,7 +120,7 @@ int32_t aaruf_read_sector(void *context, uint64_t sectorAddress, uint8_t *data, 
 
     if(block != NULL)
     {
-        memcpy(data, block + offset, blockHeader->sectorSize);
+        memcpy(data, block + offset * blockHeader->sectorSize, blockHeader->sectorSize);
         *length = blockHeader->sectorSize;
         return AARUF_STATUS_OK;
     }
